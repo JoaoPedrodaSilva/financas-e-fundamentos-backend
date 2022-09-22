@@ -2,7 +2,6 @@ require("dotenv").config()
 const cors = require("cors")
 const database = require("./database/database")
 const express = require("express")
-const { data } = require("autoprefixer")
 
 //instance of the express server
 const app = express()
