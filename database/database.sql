@@ -43,12 +43,18 @@ CREATE TABLE companies (
     company VARCHAR(255) NOT NULL UNIQUE
 );
 
--- create stocks_profit table
-CREATE TABLE stocks_profit (
+-- create companies_financial_data table
+CREATE TABLE companies_financial_data (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
     company_id BIGINT NOT NULL REFERENCES companies(id),
     year BIGINT NOT NULL,
 	net_profit BIGINT NOT NULL,
+    operating_profit BIGINT NOT NULL,
+    cash_and_cash_equivalents BIGINT NOT NULL,
+    short_term_loans_and_financings BIGINT NOT NULL,
+    long_term_loans_and_financings BIGINT NOT NULL,
+    net_worth BIGINT NOT NULL,
+    depreciation_and_amortization BIGINT NOT NULL,
     UNIQUE (company_id, year)
 );
 
@@ -58,8 +64,8 @@ SELECT * FROM companies ORDER BY code ASC
 -- get general data of an individual company
 SELECT * FROM companies WHERE id = $1
 
--- get the profit history of an individual company ordered by year
-SELECT year, net_profit FROM stocks_profit WHERE company_id = $1 ORDER BY year ASC
+-- get the financial data of an individual company ordered by year
+SELECT * FROM companies_financial_data WHERE company_id = $1 ORDER BY year ASC
 
 
 

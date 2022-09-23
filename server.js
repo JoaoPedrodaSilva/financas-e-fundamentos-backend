@@ -49,13 +49,13 @@ app.get("/api/acoes/:id", async (req, res) => {
     try {
         const allCompanies = await database.query("SELECT * FROM companies ORDER BY code ASC")
         const company = await database.query("SELECT * FROM companies WHERE id = $1", [req.params.id])
-        const companyProfit = await database.query("SELECT year, net_profit FROM stocks_profit WHERE company_id = $1 ORDER BY year ASC", [req.params.id])
+        const financialData = await database.query("SELECT * FROM companies_financial_data WHERE company_id = $1 ORDER BY year ASC", [req.params.id])
 
         res.json({
             status: "success",
             allCompanies: allCompanies.rows,
             companyData: company.rows[0],        
-            profitHistory: companyProfit.rows
+            financialData: financialData.rows
         })
     } catch (error) {
         console.log(error)
