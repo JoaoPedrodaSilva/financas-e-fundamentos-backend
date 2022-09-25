@@ -40,20 +40,25 @@ CREATE TABLE companies (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     cnpj VARCHAR(20) NOT NULL UNIQUE,
     code VARCHAR(255) NOT NULL UNIQUE,
-    company VARCHAR(255) NOT NULL UNIQUE
+    company VARCHAR(255) NOT NULL UNIQUE,
+    listing_segment VARCHAR(50) NOT NULL,
+    bookkeeper VARCHAR(50) NOT NULL,
+    sectoral_classification VARCHAR(50) NOT NULL,
+    main_activity VARCHAR(50) NOT NULL,
 );
 
 -- create companies_financial_data table
 CREATE TABLE companies_financial_data (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
     company_id BIGINT NOT NULL REFERENCES companies(id),
-    year BIGINT NOT NULL,
-	net_profit BIGINT NOT NULL,
-    operating_profit BIGINT NOT NULL,
+    year BIGINT NOT NULL,	
     cash_and_cash_equivalents BIGINT NOT NULL,
     short_term_loans_and_financings BIGINT NOT NULL,
     long_term_loans_and_financings BIGINT NOT NULL,
     net_worth BIGINT NOT NULL,
+    net_income BIGINT NOT NULL,
+    operating_profit BIGINT NOT NULL,
+    net_profit BIGINT NOT NULL,
     depreciation_and_amortization BIGINT NOT NULL,
     UNIQUE (company_id, year)
 );
