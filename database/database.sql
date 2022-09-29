@@ -55,10 +55,11 @@ CREATE TABLE companies_financial_data (
     cash_and_cash_equivalents BIGINT NOT NULL,
     short_term_loans_and_financings BIGINT NOT NULL,
     long_term_loans_and_financings BIGINT NOT NULL,
-    net_worth BIGINT NOT NULL,
+    equity BIGINT NOT NULL,
+    assets BIGINT NOT NULL,
+    net_revenue BIGINT NOT NULL,
+    operating_income BIGINT NOT NULL,
     net_income BIGINT NOT NULL,
-    operating_profit BIGINT NOT NULL,
-    net_profit BIGINT NOT NULL,
     depreciation_and_amortization BIGINT NOT NULL,
     UNIQUE (company_id, year)
 );
