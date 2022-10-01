@@ -68,10 +68,10 @@ CREATE TABLE companies_financial_data (
 SELECT * FROM companies ORDER BY code ASC
 
 -- get general data of an individual company
-SELECT * FROM companies WHERE id = $1
+SELECT * FROM companies WHERE code = $1
 
 -- get the financial data of an individual company ordered by year
-SELECT * FROM companies_financial_data WHERE company_id = $1 ORDER BY year ASC
+SELECT * FROM companies_financial_data JOIN companies ON companies_financial_data.company_id = companies.id WHERE companies.code = $1 ORDER BY year ASC
 
 
 

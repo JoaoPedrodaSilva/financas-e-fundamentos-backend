@@ -45,17 +45,17 @@ app.get("/api/artigos/:id", async (req, res) => {
 
 
 //get companies and its financial data from the database
-app.get("/api/acoes/:id", async (req, res) => {
+app.get("/api/acoes/:code", async (req, res) => {
     try {
         const allCompanies = await database.query("SELECT * FROM companies ORDER BY code ASC")
-        const selectedCompany = await database.query("SELECT * FROM companies WHERE id = $1", [req.params.id])
-        const selectedCompanyfinancialData = await database.query("SELECT * FROM companies_financial_data WHERE company_id = $1 ORDER BY year ASC", [req.params.id])
+        const selectedCompanyGeneralData = await database.query("SELECT * FROM companies WHERE code = $1", [req.params.code])
+        const selectedCompanyFinancialData = await database.query("SELECT * FROM companies_financial_data JOIN companies ON companies_financial_data.company_id = companies.id WHERE companies.code = $1 ORDER BY year ASC", [req.params.code])
 
         res.json({
             status: "success",
             allCompanies: allCompanies.rows,
-            companyData: selectedCompany.rows[0],        
-            financialData: selectedCompanyfinancialData.rows
+            companyData: selectedCompanyGeneralData.rows[0],        
+            financialData: selectedCompanyFinancialData.rows
         })
     } catch (error) {
         console.log(error)
