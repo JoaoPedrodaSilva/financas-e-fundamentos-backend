@@ -47,9 +47,9 @@ app.get("/api/artigos/:id", async (req, res) => {
 //get companies and its financial data from the database
 app.get("/api/acoes/:code", async (req, res) => {
     try {
-        const allCompanies = await database.query("SELECT * FROM companies ORDER BY code ASC")
-        const selectedCompanyGeneralData = await database.query("SELECT * FROM companies WHERE code = $1", [req.params.code])
-        const selectedCompanyFinancialData = await database.query("SELECT * FROM companies_financial_data JOIN companies ON companies_financial_data.company_id = companies.id WHERE companies.code = $1 ORDER BY year ASC", [req.params.code])
+        const allCompanies = await database.query("SELECT * FROM companies ORDER BY base_code ASC")
+        const selectedCompanyGeneralData = await database.query("SELECT * FROM companies WHERE base_code = $1", [req.params.code])
+        const selectedCompanyFinancialData = await database.query("SELECT * FROM companies_financial_data JOIN companies ON companies_financial_data.company_id = companies.id WHERE companies.base_code = $1 ORDER BY year ASC", [req.params.code])
 
         res.json({
             status: "success",
