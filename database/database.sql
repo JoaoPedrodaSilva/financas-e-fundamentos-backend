@@ -13,13 +13,14 @@ CREATE TABLE article_contents (
 	article_id BIGINT NOT NULL REFERENCES articles(id),
 	content_order BIGINT NOT NULL,
     content_type BIGINT NOT NULL REFERENCES content_types(id),
-    image_alt TEXT,
-	content TEXT NOT NULL
+	content TEXT NOT NULL,
+    image_url TEXT,
+    link_url TEXT,
     UNIQUE (article_id, content_order)
 );
 
 -- create content_types lookup table
-CREATE TABLE content_types (
+CREATE TABLE article_content_types (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	type VARCHAR(255) NOT NULL UNIQUE
 );
@@ -33,18 +34,19 @@ SELECT * FROM article_contents WHERE article_id = $1 ORDER BY content_order ASC;
 
 
 
------------------------------------------------ STOCKS PROFIT -----------------------------------------------
+----------------------------------------------- COMPANIES -----------------------------------------------
 
 -- create companies table
 CREATE TABLE companies (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     cnpj VARCHAR(20) NOT NULL UNIQUE,
-    code VARCHAR(255) NOT NULL UNIQUE,
-    company VARCHAR(255) NOT NULL UNIQUE,
+    base_code VARCHAR(4) NOT NULL UNIQUE,
+    negotiation_codes VARCHAR(50) NOT NULL,
+    company VARCHAR(255) NOT NULL,
     listing_segment VARCHAR(50) NOT NULL,
     bookkeeper VARCHAR(50) NOT NULL,
     sectoral_classification VARCHAR(50) NOT NULL,
-    main_activity VARCHAR(50) NOT NULL,
+    main_activity VARCHAR(255) NOT NULL,
 );
 
 -- create companies_financial_data table
@@ -65,13 +67,13 @@ CREATE TABLE companies_financial_data (
 );
 
 -- get all companies from database ordered alphabetically by code
-SELECT * FROM companies ORDER BY code ASC
+SELECT * FROM companies ORDER BY base_code ASC
 
 -- get general data of an individual company
-SELECT * FROM companies WHERE code = $1
+SELECT * FROM companies WHERE base_code = $1
 
 -- get the financial data of an individual company ordered by year
-SELECT * FROM companies_financial_data JOIN companies ON companies_financial_data.company_id = companies.id WHERE companies.code = $1 ORDER BY year ASC
+SELECT * FROM companies_financial_data JOIN companies ON companies_financial_data.company_id = companies.id WHERE companies.base_code = $1 ORDER BY year ASC
 
 
 
