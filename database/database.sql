@@ -1,79 +1,77 @@
------------------------------------------------ ARTICLES -----------------------------------------------
+----------------------------------------------- ARTIGOS -----------------------------------------------
 
--- create articles table
-CREATE TABLE articles (
+CREATE TABLE artigos (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
-	title VARCHAR(30) NOT NULL UNIQUE,
-	description VARCHAR(255) NOT NULL
+	titulo VARCHAR(30) NOT NULL UNIQUE,
+	descricao VARCHAR(255) NOT NULL
 );
 
--- create article_contents table
-CREATE TABLE article_contents (
+CREATE TABLE conteudos_artigo (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
-	article_id BIGINT NOT NULL REFERENCES articles(id),
-	content_order BIGINT NOT NULL,
-    content_type BIGINT NOT NULL REFERENCES content_types(id),
-	content TEXT NOT NULL,
-    image_url TEXT,
-    link_url TEXT,
-    UNIQUE (article_id, content_order)
+	id_artigo BIGINT NOT NULL REFERENCES artigos(id),
+	ordem_conteudo BIGINT NOT NULL,
+    tipo_conteudo BIGINT NOT NULL REFERENCES tipos_conteudo(id),
+	conteudo TEXT NOT NULL,
+    url_imagem TEXT,
+    url_link TEXT,
+    UNIQUE (id_artigo, ordem_conteudo)
 );
 
--- create content_types lookup table
-CREATE TABLE article_content_types (
+CREATE TABLE tipos_conteudo (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
-	type VARCHAR(255) NOT NULL UNIQUE
+	tipo VARCHAR(255) NOT NULL UNIQUE
 );
 
--- get individual article
-SELECT * FROM articles;
-
--- get all the contents of an individual article ordered
-SELECT * FROM article_contents WHERE article_id = $1 ORDER BY content_order ASC;
+SELECT * FROM artigos;
+SELECT * FROM conteudos_artigo WHERE id_artigo = $1 ORDER BY ordem_conteudo ASC;
 
 
 
 
 ----------------------------------------------- COMPANIES -----------------------------------------------
 
--- create companies table
-CREATE TABLE companies (
+CREATE TABLE empresas (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     cnpj VARCHAR(20) NOT NULL UNIQUE,
-    base_code VARCHAR(4) NOT NULL UNIQUE,
-    negotiation_codes VARCHAR(50) NOT NULL,
-    company VARCHAR(255) NOT NULL,
-    listing_segment VARCHAR(50) NOT NULL,
-    bookkeeper VARCHAR(50) NOT NULL,
-    sectoral_classification VARCHAR(50) NOT NULL,
-    main_activity VARCHAR(255) NOT NULL,
+    codigo_base VARCHAR(4) NOT NULL UNIQUE,
+    codigos_negociacao VARCHAR(50) NOT NULL,
+    nome_empresarial VARCHAR(255) NOT NULL,
+    segmento_listagem VARCHAR(50) NOT NULL,
+    escriturador VARCHAR(50) NOT NULL,
+    classificacao_setorial VARCHAR(50) NOT NULL,
+    atividade_principal VARCHAR(255) NOT NULL,
+    tem_grafico_divida BOOLEAN NOT NULL,
 );
 
 -- create companies_financial_data table
-CREATE TABLE companies_financial_data (
+CREATE TABLE dados_financeiros_empresa (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
-    company_id BIGINT NOT NULL REFERENCES companies(id),
-    year BIGINT NOT NULL,	
-    cash_and_cash_equivalents BIGINT NOT NULL,
-    short_term_loans_and_financings BIGINT NOT NULL,
-    long_term_loans_and_financings BIGINT NOT NULL,
-    equity BIGINT NOT NULL,
-    assets BIGINT NOT NULL,
-    net_revenue BIGINT NOT NULL,
-    operating_income BIGINT NOT NULL,
-    net_income BIGINT NOT NULL,
-    depreciation_and_amortization BIGINT NOT NULL,
-    UNIQUE (company_id, year)
+    id_empresa BIGINT NOT NULL REFERENCES empresas(id),
+    ano BIGINT NOT NULL,
+
+    ativo_circulante BIGINT NOT NULL,
+    caixa_e_equivalentes BIGINT NOT NULL,
+    ativo_nao_circulante BIGINT NOT NULL,
+    ativo_realizavel_longo_prazo BIGINT NOT NULL,
+    passivo_circulante BIGINT NOT NULL,
+    emprestimos_curto_prazo BIGINT NOT NULL,
+    passivo_nao_circulante BIGINT NOT NULL,
+    emprestimos_longo_prazo BIGINT NOT NULL,
+
+    receita_liquida BIGINT NOT NULL,
+    lucro_bruto BIGINT NOT NULL,
+    lucro_operacional BIGINT NOT NULL,
+    lucro_liquido BIGINT NOT NULL,
+
+    depreciacao_e_amortizacao BIGINT NOT NULL,
+    provento_distribuido BIGINT NOT NULL,
+
+    UNIQUE (id_empresa, ano)
 );
 
--- get all companies from database ordered alphabetically by code
-SELECT * FROM companies ORDER BY base_code ASC
-
--- get general data of an individual company
-SELECT * FROM companies WHERE base_code = $1
-
--- get the financial data of an individual company ordered by year
-SELECT * FROM companies_financial_data JOIN companies ON companies_financial_data.company_id = companies.id WHERE companies.base_code = $1 ORDER BY year ASC
+SELECT * FROM empresas ORDER BY codigo_base ASC
+SELECT * FROM empresas WHERE codigo_base = $1
+SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE empresas.codigo_base = $1 ORDER BY ano ASC
 
 
 
