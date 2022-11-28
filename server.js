@@ -39,11 +39,12 @@ app.get("/api/artigos/:id", async (req, res) => {
 
 //get companies and its financial data from the database
 app.get("/api/acoes/:codigo_base", async (req, res) => {
+    
     try {
         const allCompanies = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
-        const selectedCompanyRegistrationData = await database.query("SELECT * FROM empresas WHERE codigo_base = $1", [req.params.code])
-        const selectedCompanyFinancialData = await database.query("SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE empresas.codigo_base = $1 ORDER BY ano ASC", [req.params.code])
-
+        const selectedCompanyRegistrationData = await database.query("SELECT * FROM empresas WHERE codigo_base = $1", [req.params.codigo_base])
+        const selectedCompanyFinancialData = await database.query("SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE empresas.codigo_base = $1 ORDER BY ano ASC", [req.params.codigo_base])
+        
         res.json({
             empresas: allCompanies.rows,
             dadosCadastraisEmpresa: selectedCompanyRegistrationData.rows[0],        
@@ -52,6 +53,7 @@ app.get("/api/acoes/:codigo_base", async (req, res) => {
     } catch (error) {
         console.error(error)
     }
+    
 })
 
 
