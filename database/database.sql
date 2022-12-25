@@ -1,4 +1,4 @@
------------------------------------------------ ARTIGOS -----------------------------------------------
+----------------------------------------------- ARTICLES -----------------------------------------------
 
 CREATE TABLE artigos (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -40,23 +40,29 @@ CREATE TABLE empresas (
     escriturador VARCHAR(50) NOT NULL,
     classificacao_setorial VARCHAR(50) NOT NULL,
     atividade_principal VARCHAR(255) NOT NULL,
-    tem_grafico_divida BOOLEAN NOT NULL,
+    instituicao_financeira BOOLEAN NOT NULL,
 );
 
--- create companies_financial_data table
+INSERT INTO empresas (nome_empresarial, cnpj, classificacao_setorial, atividade_principal, segmento_listagem, codigo_base, codigos_negociacao, escriturador, instituicao_financeira) VALUES ()
+
+
+
 CREATE TABLE dados_financeiros_empresa (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
     id_empresa BIGINT NOT NULL REFERENCES empresas(id),
     ano BIGINT NOT NULL,
 
-    ativo_circulante BIGINT NOT NULL,
-    caixa_e_equivalentes BIGINT NOT NULL,
-    ativo_nao_circulante BIGINT NOT NULL,
-    ativo_realizavel_longo_prazo BIGINT NOT NULL,
-    passivo_circulante BIGINT NOT NULL,
-    emprestimos_curto_prazo BIGINT NOT NULL,
-    passivo_nao_circulante BIGINT NOT NULL,
-    emprestimos_longo_prazo BIGINT NOT NULL,
+    ativo_total BIGINT,
+    ativo_circulante BIGINT,
+    caixa_e_equivalentes BIGINT,
+    ativo_nao_circulante BIGINT,
+    ativo_realizavel_longo_prazo BIGINT,
+    passivo_total BIGINT,
+    passivo_circulante BIGINT,
+    emprestimos_curto_prazo BIGINT,
+    passivo_nao_circulante BIGINT,
+    emprestimos_longo_prazo BIGINT,
+    patrimonio_liquido BIGINT,
 
     receita_liquida BIGINT NOT NULL,
     lucro_bruto BIGINT NOT NULL,
@@ -68,6 +74,14 @@ CREATE TABLE dados_financeiros_empresa (
 
     UNIQUE (id_empresa, ano)
 );
+
+-- for no financial institutions
+INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido) VALUES ()
+
+-- for financial institutions
+INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_total, caixa_e_equivalentes, passivo_total, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido) VALUES ()
+
+
 
 SELECT * FROM empresas ORDER BY codigo_base ASC
 SELECT * FROM empresas WHERE codigo_base = $1
