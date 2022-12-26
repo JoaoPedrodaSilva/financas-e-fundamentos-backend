@@ -4,7 +4,7 @@ CREATE TABLE artigos (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	titulo VARCHAR(30) NOT NULL UNIQUE,
 	descricao VARCHAR(255) NOT NULL
-);
+)
 
 CREATE TABLE conteudos_artigo (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -15,15 +15,15 @@ CREATE TABLE conteudos_artigo (
     url_imagem TEXT,
     url_link TEXT,
     UNIQUE (id_artigo, ordem_conteudo)
-);
+)
 
 CREATE TABLE tipos_conteudo (
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	tipo VARCHAR(255) NOT NULL UNIQUE
-);
+)
 
-SELECT * FROM artigos;
-SELECT * FROM conteudos_artigo WHERE id_artigo = $1 ORDER BY ordem_conteudo ASC;
+SELECT * FROM artigos
+SELECT * FROM conteudos_artigo WHERE id_artigo = $1 ORDER BY ordem_conteudo ASC
 
 
 
@@ -41,7 +41,7 @@ CREATE TABLE empresas (
     classificacao_setorial VARCHAR(50) NOT NULL,
     atividade_principal VARCHAR(255) NOT NULL,
     instituicao_financeira BOOLEAN NOT NULL,
-);
+)
 
 INSERT INTO empresas (nome_empresarial, cnpj, classificacao_setorial, atividade_principal, segmento_listagem, codigo_base, codigos_negociacao, escriturador, instituicao_financeira) VALUES ()
 
@@ -73,7 +73,7 @@ CREATE TABLE dados_financeiros_empresa (
     provento_distribuido BIGINT NOT NULL,
 
     UNIQUE (id_empresa, ano)
-);
+)
 
 -- for no financial institutions
 INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido) VALUES ()
@@ -89,6 +89,25 @@ SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empre
 
 
 
+----------------------------------------------- MACROECONOMICS -----------------------------------------------
+
+CREATE TABLE indicadores_macroeconomicos (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    indicador VARCHAR(10) NOT NULL UNIQUE,
+    descricao_curta VARCHAR(50),
+    descricao_longa TEXT
+)
+
+INSERT INTO indicadores_macroeconomicos(indicador, descricao_curta, descricao_longa) VALUES()
 
 
 
+CREATE TABLE historico_valores_indicadores_macroeconomicos (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    id_indicador_macroeconomico BIGINT NOT NULL REFERENCES indicadores_macroeconomicos(id),
+    ano BIGINT NOT NULL,
+    valor DOUBLE PRECISION NOT NULL,
+    UNIQUE (id_indicador_macroeconomico, ano)
+)
+
+INSERT INTO historico_valores_indicadores_macroeconomicos(id_indicador_macroeconomico, ano, valor) VALUES ()
