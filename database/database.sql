@@ -97,8 +97,8 @@ CREATE TABLE indicadores_macroeconomicos (
     descricao_curta VARCHAR(50),
     descricao_longa TEXT
 )
-
 INSERT INTO indicadores_macroeconomicos(indicador, descricao_curta, descricao_longa) VALUES()
+SELECT * FROM indicadores_macroeconomicos ORDER BY indicador ASC
 
 
 
@@ -109,5 +109,6 @@ CREATE TABLE historico_valores_indicadores_macroeconomicos (
     valor DOUBLE PRECISION NOT NULL,
     UNIQUE (id_indicador_macroeconomico, ano)
 )
-
 INSERT INTO historico_valores_indicadores_macroeconomicos(id_indicador_macroeconomico, ano, valor) VALUES ()
+SELECT historico_valores_indicadores_macroeconomicos.id, ano, valor, id_indicador_macroeconomico FROM historico_valores_indicadores_macroeconomicos JOIN indicadores_macroeconomicos ON historico_valores_indicadores_macroeconomicos.id_indicador_macroeconomico = indicadores_macroeconomicos.id WHERE indicadores_macroeconomicos.indicador = $1 ORDER BY ano ASC
+
