@@ -64,16 +64,20 @@ CREATE TABLE dados_financeiros_empresa (
     emprestimos_longo_prazo BIGINT,
     patrimonio_liquido BIGINT,
 
-    receita_liquida BIGINT NOT NULL,
-    lucro_bruto BIGINT NOT NULL,
-    lucro_operacional BIGINT NOT NULL,
-    lucro_liquido BIGINT NOT NULL,
+    receita_liquida BIGINT,
+    lucro_bruto BIGINT,
+    lucro_operacional BIGINT,
+    lucro_liquido BIGINT,
 
-    depreciacao_e_amortizacao BIGINT NOT NULL,
-    provento_distribuido BIGINT NOT NULL,
+    depreciacao_e_amortizacao BIGINT,
+    provento_distribuido BIGINT,
 
     UNIQUE (id_empresa, ano)
 )
+
+-- for no financial institutions
+SELECT id, id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
+
 
 -- for no financial institutions
 INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido) VALUES ()
