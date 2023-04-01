@@ -44,7 +44,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
     try {
         const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
         const dadosEmpresaSelecionada = await database.query("SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE empresas.codigo_base = $1 ORDER BY ano ASC", [req.params.codigoBaseParametro])
-        
+
         res.json({
             empresas: todasEmpresas.rows,       
             dadosEmpresaSelecionada: dadosEmpresaSelecionada.rows

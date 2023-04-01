@@ -78,12 +78,16 @@ CREATE TABLE dados_financeiros_empresa (
 -- for no financial institutions
 SELECT id, id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
+-- for financial institutions (banks)
+SELECT id, id_empresa, ano, ativo_total, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, provento_distribuido FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
+
+
 
 -- for no financial institutions
 INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido) VALUES ()
 
--- for financial institutions
-INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_total, caixa_e_equivalentes, passivo_total, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido) VALUES ()
+-- for financial institutions (banks)
+INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_total, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, provento_distribuido) VALUES ()
 
 
 
