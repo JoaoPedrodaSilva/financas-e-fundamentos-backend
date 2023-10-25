@@ -22,16 +22,16 @@ SELECT * FROM empresas WHERE codigo_base = $1
 
 
 CREATE TABLE dados_financeiros_empresa (
-	id BIGSERIAL NOT NULL PRIMARY KEY,
+    id BIGSERIAL NOT NULL PRIMARY KEY,
     id_empresa BIGINT NOT NULL REFERENCES empresas(id),
     ano BIGINT NOT NULL,
 
     ativo_total BIGINT,
     ativo_circulante BIGINT,
     caixa_e_equivalentes BIGINT,
+    estoques BIGINT,
     ativo_nao_circulante BIGINT,
     ativo_realizavel_longo_prazo BIGINT,
-    passivo_total BIGINT,
     passivo_circulante BIGINT,
     emprestimos_curto_prazo BIGINT,
     passivo_nao_circulante BIGINT,
@@ -41,22 +41,48 @@ CREATE TABLE dados_financeiros_empresa (
     receita_liquida BIGINT,
     lucro_bruto BIGINT,
     lucro_operacional BIGINT,
+    lucro_antes_tributos BIGINT,
     lucro_liquido BIGINT,
 
+    caixa_liquido_operacional BIGINT,
     depreciacao_e_amortizacao BIGINT,
-    provento_distribuido BIGINT,
+    despesas_capital BIGINT,
+    proventos_distribuidos BIGINT,
 
     UNIQUE (id_empresa, ano)
 )
 
 
 -- for no financial institutions
-INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido) VALUES ()
-SELECT id, id_empresa, ano, ativo_circulante, caixa_e_equivalentes, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, depreciacao_e_amortizacao, provento_distribuido FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
+INSERT INTO dados_financeiros_empresa (
+id_empresa, ano,
+ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
+passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo,
+receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido,
+caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
+VALUES ()
+
+SELECT id, id_empresa, ano,
+ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
+passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo,
+receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido,
+caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos
+FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
+
 
 -- for financial institutions (banks)
-INSERT INTO dados_financeiros_empresa (id_empresa, ano, ativo_total, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, provento_distribuido) VALUES ()
-SELECT id, id_empresa, ano, ativo_total, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido, provento_distribuido FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
+INSERT INTO dados_financeiros_empresa (
+id_empresa, ano,
+ativo_total, patrimonio_liquido,
+receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido,
+caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
+VALUES ()
+
+SELECT id, id_empresa, ano,
+ativo_total, patrimonio_liquido,
+receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido,
+caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos
+FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
 
 SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE empresas.codigo_base = $1 ORDER BY ano ASC
