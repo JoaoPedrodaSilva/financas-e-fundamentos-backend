@@ -11,9 +11,10 @@ CREATE TABLE empresas (
     classificacao_setorial VARCHAR(50) NOT NULL,
     atividade_principal VARCHAR(255) NOT NULL,
     instituicao_financeira BOOLEAN NOT NULL,
+    holding BOOLEAN NOT NULL,
 )
 
-INSERT INTO empresas (nome_empresarial, cnpj, classificacao_setorial, atividade_principal, segmento_listagem, codigo_base, codigos_negociacao, escriturador, instituicao_financeira) VALUES ()
+INSERT INTO empresas (nome_empresarial, cnpj, classificacao_setorial, atividade_principal, segmento_listagem, codigo_base, codigos_negociacao, escriturador, instituicao_financeira, holding) VALUES ()
 SELECT * FROM empresas ORDER BY codigo_base ASC
 SELECT * FROM empresas WHERE codigo_base = $1
 
@@ -74,13 +75,13 @@ FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
 ativo_total, patrimonio_liquido,
-receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido,
+receita_liquida, lucro_bruto, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
 VALUES ()
 
 SELECT id, id_empresa, ano,
 ativo_total, patrimonio_liquido,
-receita_liquida, lucro_bruto, lucro_operacional, lucro_liquido,
+receita_liquida, lucro_bruto, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
