@@ -54,7 +54,7 @@ CREATE TABLE dados_financeiros_empresa (
 )
 
 
--- for no financial institutions && no holdings
+-- for companies which are no financial institutions nor holdings
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
 ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
@@ -71,7 +71,7 @@ caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, provento
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
 
--- for financial institutions && no holdings
+-- for financial institutions which are no holdings
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
 ativo_total, patrimonio_liquido,
@@ -86,7 +86,7 @@ caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, provento
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
 
--- for financial institutions && holdings (BBSE)
+-- for holdings, financial institutions or not (BBSE, BRAP)
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
 ativo_total, patrimonio_liquido,
