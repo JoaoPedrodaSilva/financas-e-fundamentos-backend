@@ -1,4 +1,5 @@
 ---------------------------------------------------- COMPANIES -------------------------------------------------------
+---------------------------------------------------- EMPRESAS -------------------------------------------------------
 
 CREATE TABLE empresas (
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -20,6 +21,7 @@ SELECT * FROM empresas WHERE codigo_base = $1
 
 
 ----------------------------------------------- COMPANY FINANCIAL DATA -----------------------------------------------
+----------------------------------------------- DADOS FINANCEIROS DA EMPRESA -----------------------------------------------
 
 
 CREATE TABLE dados_financeiros_empresa (
@@ -33,6 +35,7 @@ CREATE TABLE dados_financeiros_empresa (
     estoques BIGINT,
     ativo_nao_circulante BIGINT,
     ativo_realizavel_longo_prazo BIGINT,
+    passivo_total BIGINT,
     passivo_circulante BIGINT,
     emprestimos_curto_prazo BIGINT,
     passivo_nao_circulante BIGINT,
@@ -55,47 +58,54 @@ CREATE TABLE dados_financeiros_empresa (
 
 
 -- for companies which are no financial institutions nor holdings
+-- para empresas que não são instituições financeiras nem holdings
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
-ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
-passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo,
+ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
+passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
 VALUES ()
 
 SELECT id, id_empresa, ano,
-ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
-passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo,
+ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
+passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
 
 -- for financial institutions which are no holdings
+-- para instituições financeiras que não são holdings
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
-ativo_total, patrimonio_liquido,
+ativo_total, ativo_circulante, ativo_nao_circulante,
+passivo_total, passivo_circulante, passivo_nao_circulante, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
 VALUES ()
 
 SELECT id, id_empresa, ano,
-ativo_total, patrimonio_liquido,
+ativo_total, ativo_circulante, ativo_nao_circulante,
+passivo_total, passivo_circulante, passivo_nao_circulante, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
 
 -- for holdings, financial institutions or not (BBSE, BRAP)
+-- para holdings, sejam elas instituições financeiras ou não (BBSE, BRAP)
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
-ativo_total, patrimonio_liquido,
+ativo_total, ativo_circulante, ativo_nao_circulante,
+passivo_total, passivo_circulante, passivo_nao_circulante, patrimonio_liquido,
 lucro_operacional, lucro_antes_tributos, lucro_liquido,
 proventos_distribuidos)
 VALUES ()
 
 SELECT id, id_empresa, ano,
-ativo_total, patrimonio_liquido,
+ativo_total, ativo_circulante, ativo_nao_circulante,
+passivo_total, passivo_circulante, passivo_nao_circulante, patrimonio_liquido,
 lucro_operacional, lucro_antes_tributos, lucro_liquido,
 proventos_distribuidos
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
@@ -106,6 +116,7 @@ SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empre
 
 
 ----------------------------------------------- MACROECONOMICS -----------------------------------------------
+----------------------------------------------- MACROECONOMIA -----------------------------------------------
 
 CREATE TABLE indicadores_macroeconomicos (
     id BIGSERIAL NOT NULL PRIMARY KEY,
