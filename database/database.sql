@@ -79,15 +79,13 @@ FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 -- para instituições financeiras que não são holdings
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
-ativo_total, ativo_circulante, ativo_nao_circulante,
-passivo_total, passivo_circulante, passivo_nao_circulante, patrimonio_liquido,
+ativo_total, passivo_total, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
 VALUES ()
 
 SELECT id, id_empresa, ano,
-ativo_total, ativo_circulante, ativo_nao_circulante,
-passivo_total, passivo_circulante, passivo_nao_circulante, patrimonio_liquido,
+ativo_total, passivo_total, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
