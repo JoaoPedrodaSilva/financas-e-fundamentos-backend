@@ -91,8 +91,8 @@ caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, provento
 FROM dados_financeiros_empresa WHERE id_empresa=3 ORDER BY ano DESC
 
 
--- for holdings, financial institutions or not (BBSE, BRAP)
--- para holdings, sejam elas instituições financeiras ou não (BBSE, BRAP)
+-- for holdings, financial institutions or not (BBSE, BRAP, CXSE)
+-- para holdings, sejam elas instituições financeiras ou não (BBSE, BRAP, CXSE)
 INSERT INTO dados_financeiros_empresa (
 id_empresa, ano,
 ativo_total, ativo_circulante, ativo_nao_circulante,
