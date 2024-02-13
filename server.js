@@ -36,6 +36,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
     }
 })
 
+
 //get macroeconomic metrics and its historical values from the database
 app.get("/api/macroeconomia/:indicadorParametro", async (req, res) => {
 
