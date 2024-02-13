@@ -30,7 +30,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
         const dadosEmpresaSelecionada = await database.query("SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE empresas.codigo_base = $1 ORDER BY ano ASC", [req.params.codigoBaseParametro])
 
         res.json({
-            empresas: todasEmpresas,
+            empresas: todasEmpresas.rows,
             dadosEmpresaSelecionada: dadosEmpresaSelecionada.rows
         })
     } catch (error) {
