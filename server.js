@@ -9,6 +9,20 @@ app.use(cors()) //middleware that prevents CORS error due the different ports of
 app.use(express.json()) //buitin express middleware that attaches the posted object to the body of the request (req.body)
 
 
+//get all companies and its registration data from the database
+app.get("/api/acoes/", async (_, res) => {
+    try {
+        const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
+
+        res.json({
+            empresas: todasEmpresas.rows
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+
 //get companies and its financial data from the database
 app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
     
@@ -22,8 +36,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
         })
     } catch (error) {
         console.error(error)
-    }
-    
+    }    
 })
 
 //get macroeconomic metrics and its historical values from the database
