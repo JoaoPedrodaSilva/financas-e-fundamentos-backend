@@ -130,10 +130,10 @@ SELECT * FROM indicadores_macroeconomicos ORDER BY indicador ASC
 CREATE TABLE historico_valores_indicadores_macroeconomicos (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     id_indicador_macroeconomico BIGINT NOT NULL REFERENCES indicadores_macroeconomicos(id),
-    ano BIGINT NOT NULL,
+    data DATE NOT NULL,
     valor DOUBLE PRECISION NOT NULL,
-    UNIQUE (id_indicador_macroeconomico, ano)
+    UNIQUE (id_indicador_macroeconomico, data)
 )
-INSERT INTO historico_valores_indicadores_macroeconomicos(id_indicador_macroeconomico, ano, valor) VALUES ()
-SELECT historico_valores_indicadores_macroeconomicos.id, ano, valor, id_indicador_macroeconomico FROM historico_valores_indicadores_macroeconomicos JOIN indicadores_macroeconomicos ON historico_valores_indicadores_macroeconomicos.id_indicador_macroeconomico = indicadores_macroeconomicos.id WHERE indicadores_macroeconomicos.indicador = $1 ORDER BY ano ASC
+INSERT INTO historico_valores_indicadores_macroeconomicos(id_indicador_macroeconomico, data, valor) VALUES ()
+SELECT historico_valores_indicadores_macroeconomicos.id, data, valor, id_indicador_macroeconomico FROM historico_valores_indicadores_macroeconomicos JOIN indicadores_macroeconomicos ON historico_valores_indicadores_macroeconomicos.id_indicador_macroeconomico = indicadores_macroeconomicos.id WHERE indicadores_macroeconomicos.indicador = $1 ORDER BY data ASC
 

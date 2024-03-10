@@ -40,15 +40,21 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
 
 
 //get macroeconomic metrics and its historical values from the database
-app.get("/api/macroeconomia/:indicadorParametro", async (req, res) => {
+app.get("/api/macroeconomia/", async (_, res) => {
 
     try {
         const todosIndicadores = await database.query("SELECT * FROM indicadores_macroeconomicos ORDER BY indicador ASC")
-        const historicoValoresIndicadorMacroeconomico = await database.query("SELECT historico_valores_indicadores_macroeconomicos.id, ano, valor, id_indicador_macroeconomico FROM historico_valores_indicadores_macroeconomicos JOIN indicadores_macroeconomicos ON historico_valores_indicadores_macroeconomicos.id_indicador_macroeconomico = indicadores_macroeconomicos.id WHERE indicadores_macroeconomicos.indicador = $1 ORDER BY ano ASC", [req.params.indicadorParametro])
+        const historicoValoresIpcaDozeMeses = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 1 ORDER BY competencia")
+        const historicoValoresSelicMeta = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 2 ORDER BY competencia")
+        const historicoValoresDolarEua = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 5 ORDER BY competencia")
+        
+        
 
         res.json({
-            indicadores: todosIndicadores.rows,
-            historicoValoresIndicadorMacroeconomico: historicoValoresIndicadorMacroeconomico.rows
+            todosIndicadores: todosIndicadores.rows,
+            historicoValoresIpcaDozeMeses: historicoValoresIpcaDozeMeses.rows,
+            historicoValoresSelicMeta: historicoValoresSelicMeta.rows,
+            historicoValoresDolarEua: historicoValoresDolarEua.rows            
         })
     } catch (error) {
         console.error(error)
