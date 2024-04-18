@@ -24,10 +24,11 @@ app.use(express.json()) //buitin express middleware that attaches the posted obj
 
 app.get("/api/acoes/", async (_, res) => {
     try {
-        // const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
+        const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
 
         res.json({
-            empresas: "hello"
+            empresas: "hello",
+            empresas2: todasEmpresas.rows
         })
     } catch (error) {
         console.error(error)
