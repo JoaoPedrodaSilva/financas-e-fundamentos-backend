@@ -5,8 +5,22 @@ const express = require("express")
 
 
 const app = express() //instance of the express server
-app.use(cors()) //middleware that prevents CORS error due the different ports of server and client (security)
+app.use(cors()) //middleware that prevents CORS error due the different ports of server and client (security - arguments should not be empty in a production environment)
 app.use(express.json()) //buitin express middleware that attaches the posted object to the body of the request (req.body)
+
+
+//get all companies and its registration data from the database
+app.get("/api/", async (_, res) => {
+    try {
+        // const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
+
+        res.json({
+            empresas: "hello"
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
 
 
 //get all companies and its registration data from the database
