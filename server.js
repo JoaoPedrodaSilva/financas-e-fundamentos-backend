@@ -10,25 +10,12 @@ app.use(express.json()) //buitin express middleware that attaches the posted obj
 
 
 //get all companies and its registration data from the database
-// app.get("/api/acoes/", async (_, res) => {
-//     try {
-//         const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
-
-//         res.json({
-//             empresas: todasEmpresas.rows
-//         })
-//     } catch (error) {
-//         console.error(error)
-//     }
-// })
-
 app.get("/api/acoes/", async (_, res) => {
     try {
         const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
 
         res.json({
-            empresas: "hello",
-            empresas2: todasEmpresas.rows
+            empresas: todasEmpresas.rows
         })
     } catch (error) {
         console.error(error)
