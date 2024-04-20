@@ -118,7 +118,7 @@ SELECT * FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empre
 
 CREATE TABLE indicadores_macroeconomicos (
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    indicador VARCHAR(10) NOT NULL UNIQUE,
+    indicador VARCHAR(20) NOT NULL UNIQUE,
     descricao_curta VARCHAR(50),
     descricao_longa TEXT
 )
@@ -132,8 +132,8 @@ CREATE TABLE historico_valores_indicadores_macroeconomicos (
     id_indicador_macroeconomico BIGINT NOT NULL REFERENCES indicadores_macroeconomicos(id),
     competencia DATE NOT NULL,
     valor DOUBLE PRECISION,
-    UNIQUE (id_indicador_macroeconomico, data)
+    UNIQUE (id_indicador_macroeconomico, competencia)
 )
 INSERT INTO historico_valores_indicadores_macroeconomicos(id_indicador_macroeconomico, competencia, valor) VALUES ()
-SELECT historico_valores_indicadores_macroeconomicos.id, data, valor, id_indicador_macroeconomico FROM historico_valores_indicadores_macroeconomicos JOIN indicadores_macroeconomicos ON historico_valores_indicadores_macroeconomicos.id_indicador_macroeconomico = indicadores_macroeconomicos.id WHERE indicadores_macroeconomicos.indicador = $1 ORDER BY data ASC
+SELECT historico_valores_indicadores_macroeconomicos.id, competencia, valor, id_indicador_macroeconomico FROM historico_valores_indicadores_macroeconomicos JOIN indicadores_macroeconomicos ON historico_valores_indicadores_macroeconomicos.id_indicador_macroeconomico = indicadores_macroeconomicos.id WHERE indicadores_macroeconomicos.indicador = $1 ORDER BY data ASC
 
