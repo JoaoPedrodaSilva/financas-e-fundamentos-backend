@@ -9,6 +9,58 @@ app.use(cors()) //middleware that prevents CORS error due the different ports of
 app.use(express.json()) //buitin express middleware that attaches the posted object to the body of the request (req.body)
 
 
+
+app.get("/api/cadastrese/", async (_, res) => {
+    try {
+        res.json({
+            response: "Get no Cadastre-se"
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+app.get("/api/entrar/", async (_, res) => {
+    try {
+        res.json({
+            response: "Get no Entrar"
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+app.post("/api/cadastrese/", async (req, res) => {
+    try {
+        const usuarioNovo = await database.query(
+            'INSERT INTO usuarios(usuario, senha) VALUES($1, $2) RETURNING *',
+            [req.body.usuario, req.body.senha]
+        )
+
+        res.json({
+            usuarioNovo: usuarioNovo.rows[0]
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+app.post("/api/entrar/", async (req, res) => {
+    try {
+        const usuarioNovo = await database.query(
+            'SELECT * FROM usuarios WHERE usuario = $1',
+            [req.body.usuario]
+        )
+
+        res.json({
+            response: "Post no Entrar"
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+
 //get all companies and its registration data from the database
 app.get("/api/acoes/", async (_, res) => {
     try {
