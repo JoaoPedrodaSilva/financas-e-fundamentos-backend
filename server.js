@@ -2,28 +2,39 @@ require("dotenv").config()
 const cors = require("cors")
 const database = require("./database/database")
 const express = require("express")
+const argon2 = require('argon2')
+const cookieParser = require('cookie-parser')
 
 
-const app = express() //instance of the express server
-app.use(cors()) //middleware that prevents CORS error due the different ports of server and client (security - arguments should not be empty in a production environment)
-app.use(express.json()) //buitin express middleware that attaches the posted object to the body of the request (req.body)
+const app = express()
+
+
+//middlewares
+app.use(cookieParser())
+app.use(cors({
+    origin: process.env.VITE_API_FRONTEND_URL_PROD ?? process.env.VITE_API_FRONTEND_URL_DEV,
+    credentials: true
+})) 
+app.use(express.json())
 
 
 
 app.get("/api/cadastrese/", async (_, res) => {
     try {
+        res.cookie("newUser", true, {secure: true, httpOnly: true})
+
         res.json({
-            response: "Get no Cadastre-se"
+            response: `Get no Cadastre-se.`
         })
     } catch (error) {
         console.error(error)
     }
 })
 
-app.get("/api/entrar/", async (_, res) => {
+app.get("/api/entrar/", async (req, res) => {
     try {
         res.json({
-            response: "Get no Entrar"
+            cookies: req.cookies
         })
     } catch (error) {
         console.error(error)
@@ -34,7 +45,7 @@ app.post("/api/cadastrese/", async (req, res) => {
     try {
         const usuarioNovo = await database.query(
             'INSERT INTO usuarios(usuario, senha) VALUES($1, $2) RETURNING *',
-            [req.body.usuario, req.body.senha]
+            [req.body.usuario, await argon2.hash(req.body.senha)]
         )
 
         res.json({
