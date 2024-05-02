@@ -12,7 +12,7 @@ const app = express()
 //middlewares
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.VITE_API_FRONTEND_URL_PROD ?? process.env.VITE_API_FRONTEND_URL_DEV,
+    origin: process.env.VITE_API_FRONTEND_URL,
     credentials: true
 })) 
 app.use(express.json())
