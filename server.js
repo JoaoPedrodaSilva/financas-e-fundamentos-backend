@@ -4,6 +4,7 @@ const database = require("./database/database")
 const express = require("express")
 const argon2 = require('argon2')
 const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
 
 
 const app = express()
@@ -12,17 +13,19 @@ const app = express()
 //middlewares
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.VITE_API_FRONTEND_URL,
+    origin: process.env.FRONTEND_URL,
     credentials: true
-})) 
+}))
 app.use(express.json())
 
+
+const createJwt = (id) => {
+    return jwt.sign({ id }, process.env.JWTSECRET)
+}
 
 
 app.get("/api/cadastrese/", async (_, res) => {
     try {
-        res.cookie("newUser", true, {secure: true, httpOnly: true})
-
         res.json({
             response: `Get no Cadastre-se.`
         })
@@ -34,7 +37,8 @@ app.get("/api/cadastrese/", async (_, res) => {
 app.get("/api/entrar/", async (req, res) => {
     try {
         res.json({
-            cookies: req.cookies
+            cookies: req.cookies,
+            response: `Get no Entrar.`
         })
     } catch (error) {
         console.error(error)
@@ -48,6 +52,9 @@ app.post("/api/cadastrese/", async (req, res) => {
             [req.body.usuario, await argon2.hash(req.body.senha)]
         )
 
+        const token = createJwt(usuarioNovo.usuario)
+        res.cookie("jwt", token, { httpOnly: true })
+
         res.json({
             usuarioNovo: usuarioNovo.rows[0]
         })
@@ -58,14 +65,33 @@ app.post("/api/cadastrese/", async (req, res) => {
 
 app.post("/api/entrar/", async (req, res) => {
     try {
-        const usuarioNovo = await database.query(
+        const usuarioLogado = await database.query(
             'SELECT * FROM usuarios WHERE usuario = $1',
             [req.body.usuario]
         )
 
-        res.json({
-            response: "Post no Entrar"
-        })
+        if (usuarioLogado.rows.length > 0) {
+            const senhaCorreta = await argon2.verify(usuarioLogado.rows[0].senha, req.body.senha)
+
+            if (senhaCorreta) {
+                const token = createJwt(usuarioLogado.rows[0].usuario)
+                res.cookie("jwt", token, { httpOnly: true })
+                res.json({
+                    response: usuarioLogado.rows[0]
+                })
+            } else {
+                res.json({
+                    response: "Usuário ou senha inválidos"
+                })
+            }
+            
+        } else {
+            res.json({
+                response: ["Usuário ou senha inválidos"]
+            })
+        }
+
+
     } catch (error) {
         console.error(error)
     }
@@ -110,14 +136,14 @@ app.get("/api/macroeconomia/", async (_, res) => {
         const historicoValoresIpcaDozeMeses = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 1 ORDER BY competencia")
         const historicoValoresSelicMeta = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 2 ORDER BY competencia")
         const historicoValoresDolarEua = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 5 ORDER BY competencia")
-        
-        
+
+
 
         res.json({
             todosIndicadores: todosIndicadores.rows,
             historicoValoresIpcaDozeMeses: historicoValoresIpcaDozeMeses.rows,
             historicoValoresSelicMeta: historicoValoresSelicMeta.rows,
-            historicoValoresDolarEua: historicoValoresDolarEua.rows            
+            historicoValoresDolarEua: historicoValoresDolarEua.rows
         })
     } catch (error) {
         console.error(error)
