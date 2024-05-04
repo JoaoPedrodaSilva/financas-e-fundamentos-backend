@@ -133,8 +133,13 @@ app.get("/api/macroeconomia/", async (_, res) => {
 
     try {
         const todosIndicadores = await database.query("SELECT * FROM indicadores_macroeconomicos ORDER BY indicador ASC")
+
         const historicoValoresIpcaDozeMeses = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 1 ORDER BY competencia")
+
         const historicoValoresSelicMeta = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 2 ORDER BY competencia")
+
+        const historicoValoresEmbi = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 3 ORDER BY competencia")
+
         const historicoValoresDolarEua = await database.query("SELECT * FROM historico_valores_indicadores_macroeconomicos WHERE id_indicador_macroeconomico = 5 ORDER BY competencia")
 
 
@@ -143,6 +148,7 @@ app.get("/api/macroeconomia/", async (_, res) => {
             todosIndicadores: todosIndicadores.rows,
             historicoValoresIpcaDozeMeses: historicoValoresIpcaDozeMeses.rows,
             historicoValoresSelicMeta: historicoValoresSelicMeta.rows,
+            historicoValoresEmbi: historicoValoresEmbi.rows,
             historicoValoresDolarEua: historicoValoresDolarEua.rows
         })
     } catch (error) {
