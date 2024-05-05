@@ -19,49 +19,47 @@ app.use(cors({
 app.use(express.json())
 
 
-const createJwt = (id) => {
-    return jwt.sign({ id }, process.env.JWTSECRET)
+//create JWT
+const criaJwt = (usuario) => {
+    return jwt.sign({ usuario }, process.env.JWTSECRET)
+}
+
+//Verify Authenticity
+const verificaAutenticidade = (req, res, next) => {
+    const token = req.cookies.jwt
+    if (token) {
+        jwt.verify(token, process.env.JWTSECRET, (erro) => {
+            if (!erro) {
+                next()
+            } else {
+                //console.log("erro na verificação do segredo do jwt")
+                res.json({ token: null })
+            }
+        })
+    } else {
+        //console.log("não encontrou o cookie jwt")
+        res.json({ token: null })
+    }
 }
 
 
-app.get("/api/cadastrese/", async (_, res) => {
-    try {
-        res.json({
-            response: `Get no Cadastre-se.`
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
+// app.post("/api/cadastrese/", async (req, res) => {
+//     try {
+//         const usuarioNovo = await database.query(
+//             'INSERT INTO usuarios(usuario, senha) VALUES($1, $2) RETURNING *',
+//             [req.body.usuario, await argon2.hash(req.body.senha)]
+//         )
 
-app.get("/api/entrar/", async (req, res) => {
-    try {
-        res.json({
-            cookies: req.cookies,
-            response: `Get no Entrar.`
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
+//         const token = criaJwt(usuarioNovo.usuario)
+//         res.cookie("jwt", token, { httpOnly: true })
 
-app.post("/api/cadastrese/", async (req, res) => {
-    try {
-        const usuarioNovo = await database.query(
-            'INSERT INTO usuarios(usuario, senha) VALUES($1, $2) RETURNING *',
-            [req.body.usuario, await argon2.hash(req.body.senha)]
-        )
-
-        const token = createJwt(usuarioNovo.usuario)
-        res.cookie("jwt", token, { httpOnly: true })
-
-        res.json({
-            usuarioNovo: usuarioNovo.rows[0]
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
+//         res.json({
+//             usuarioNovo: usuarioNovo.rows[0]
+//         })
+//     } catch (error) {
+//         console.error(error)
+//     }
+// })
 
 app.post("/api/entrar/", async (req, res) => {
     try {
@@ -74,24 +72,44 @@ app.post("/api/entrar/", async (req, res) => {
             const senhaCorreta = await argon2.verify(usuarioLogado.rows[0].senha, req.body.senha)
 
             if (senhaCorreta) {
-                const token = createJwt(usuarioLogado.rows[0].usuario)
+                const token = criaJwt(usuarioLogado.rows[0].usuario)
                 res.cookie("jwt", token, { httpOnly: true })
                 res.json({
-                    response: usuarioLogado.rows[0]
+                    usuarioAutenticado: true
                 })
             } else {
                 res.json({
-                    response: "Usuário ou senha inválidos"
+                    erro: "Usuário ou senha inválidos",
+                    usuarioAutenticado: false
                 })
             }
-            
         } else {
             res.json({
-                response: ["Usuário ou senha inválidos"]
+                erro: ["Usuário ou senha inválidos"],
+                usuarioAutenticado: false
             })
         }
+    } catch (error) {
+        console.error(error)
+    }
+})
 
+app.get("/api/rotaProtegida/", verificaAutenticidade, async (req, res) => {
+    try {
+        res.json({
+            usuarioAutenticado: true
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
 
+app.get("/api/sair/", async (_, res) => {
+    res.clearCookie('jwt')
+    try {
+        res.json({
+            usuarioAutenticado: false
+        })
     } catch (error) {
         console.error(error)
     }
