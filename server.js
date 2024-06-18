@@ -15,7 +15,7 @@ app.use(cors({
 app.use(express.json())
 
 
-//get all companies and its registration data from the database
+//get all companies and its registration data
 app.get("/api/acoes/", async (_, res) => {
     try {
         const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
@@ -29,7 +29,7 @@ app.get("/api/acoes/", async (_, res) => {
 })
 
 
-//get selected company and it financial data from the database
+//get selected company and it financial data
 app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
     try {
         const todasEmpresas = await database.query("SELECT * FROM empresas ORDER BY codigo_base ASC")
@@ -45,7 +45,23 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
 })
 
 
-//get macroeconomic metrics and its historical values from the database
+//get selected metric for all companies
+app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
+    try {
+        const dadosRanking = await database.query("SELECT codigo_base, ano, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, classificacao_setorial FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
+            [req.params.anoParametro, req.params.setorParametro])
+
+        res.json({
+            dadosRanking: dadosRanking.rows
+        })
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+
+
+//get macroeconomic metrics and its historical values
 app.get("/api/macroeconomia/", async (_, res) => {
 
     try {
