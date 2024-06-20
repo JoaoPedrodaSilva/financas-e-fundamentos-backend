@@ -46,7 +46,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
 //get selected metric for all companies
 app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
     try {
-        const dadosRanking = await database.query("SELECT codigo_base, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos  FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
+        const dadosRanking = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos  FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
             [req.params.anoParametro, req.params.setorParametro])
 
         res.json({
@@ -56,7 +56,6 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
         console.error(error)
     }
 })
-
 
 
 //get macroeconomic metrics and its historical values
