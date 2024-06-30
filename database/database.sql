@@ -15,7 +15,11 @@ CREATE TABLE empresas (
     holding BOOLEAN NOT NULL,
 )
 
-INSERT INTO empresas (nome_empresarial, cnpj, classificacao_setorial, atividade_principal, segmento_listagem, codigo_base, codigos_negociacao, escriturador, instituicao_financeira, holding) VALUES ()
+INSERT INTO empresas (nome_empresarial, cnpj,
+    classificacao_setorial, atividade_principal,
+    segmento_listagem, codigo_base, codigos_negociacao, escriturador,
+    instituicao_financeira, holding) VALUES ()
+
 SELECT * FROM empresas ORDER BY codigo_base ASC
 SELECT * FROM empresas WHERE codigo_base = $1
 
@@ -65,7 +69,11 @@ ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circula
 passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
-VALUES ()
+VALUES (3, 2016,
+0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0,
+0, 0, 0, 0)
 
 SELECT id, id_empresa, ano,
 ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
