@@ -135,13 +135,81 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
             if (req.params.setorParametro === "Todos") {
                 dadosRanking = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
                     [req.params.anoParametro])
+
+                dadosRanking = dadosRanking.rows.map(cadaAnoDeDados => {
+                    const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaAnoDeDados, cadaAnoDeDados)
+
+                    return ({
+                        ano: new Date(`01-01-${cadaAnoDeDados.ano}`).getFullYear(),
+                        ativoCirculante,
+                        ativoNaoCirculante,
+                        ativoTotal,
+                        passivoCirculante,
+                        passivoNaoCirculante,
+                        passivoTotal,
+                        patrimonioLiquido,
+                        receitaLiquida,
+                        lucroBruto,
+                        lucroOperacional,
+                        lucroAntesTributos,
+                        lucroLiquido,
+                        dividaLiquidaPeloEbitda,
+                        dividaBrutaPeloPatrimonioLiquido,
+                        retornoPeloPatrimonioLiquido,
+                        retornoPelosAtivos,
+                        margemBruta,
+                        margemOperacional,
+                        margemAntesTributos,
+                        margemLiquida,
+                        capexPeloFCO,
+                        capexPelaDA,
+                        payout,
+                        liquidezImediata,
+                        liquidezSeca,
+                        liquidezCorrente,
+                        liquidezGeral
+                    })
+                })
+
             } else if (req.params.setorParametro !== "Todos") {
                 dadosRanking = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
                     [req.params.anoParametro, req.params.setorParametro])
+
+                dadosRanking = dadosRanking.rows.map(cadaAnoDeDados => {
+                    const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaAnoDeDados, cadaAnoDeDados)
+
+                    return ({
+                        ano: new Date(`01-01-${cadaAnoDeDados.ano}`).getFullYear(),
+                        ativoCirculante,
+                        ativoNaoCirculante,
+                        ativoTotal,
+                        passivoCirculante,
+                        passivoNaoCirculante,
+                        passivoTotal,
+                        patrimonioLiquido,
+                        receitaLiquida,
+                        lucroBruto,
+                        lucroOperacional,
+                        lucroAntesTributos,
+                        lucroLiquido,
+                        dividaLiquidaPeloEbitda,
+                        dividaBrutaPeloPatrimonioLiquido,
+                        retornoPeloPatrimonioLiquido,
+                        retornoPelosAtivos,
+                        margemBruta,
+                        margemOperacional,
+                        margemAntesTributos,
+                        margemLiquida,
+                        capexPeloFCO,
+                        capexPelaDA,
+                        payout,
+                        liquidezImediata,
+                        liquidezSeca,
+                        liquidezCorrente,
+                        liquidezGeral
+                    })
+                })
             }
-
-            dadosRanking = dadosRanking.rows
-
 
         } else if (req.params.anoParametro === "MediaDosTresUltimosAnos") {
             const anoMaisRecente = 2023
@@ -169,9 +237,9 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
             }
 
             let arrayComTodasEmpresasComMediaCalculadaTemp = []
-            const todosOsAnosConsolidados = [...dadosRankingPrimeiroAno.rows, ...dadosRankingSegundoAno.rows, ...dadosRankingTerceiroAno.rows]
+            const todosOsAnosConsolidadosPadraoConsultaDB = [...dadosRankingPrimeiroAno.rows, ...dadosRankingSegundoAno.rows, ...dadosRankingTerceiroAno.rows]
 
-            todosOsAnosConsolidados.map(cadaEmpresa => {
+            todosOsAnosConsolidadosPadraoConsultaDB.map(cadaEmpresa => {
                 if (arrayComTodasEmpresasComMediaCalculadaTemp.length === 0) {
                     arrayComTodasEmpresasComMediaCalculadaTemp.push(cadaEmpresa.codigo_base)
                 } else if (!arrayComTodasEmpresasComMediaCalculadaTemp.includes(cadaEmpresa.codigo_base)) {
@@ -179,35 +247,48 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                 }
             })
 
-            arrayComTodasEmpresasComMediaCalculadaTemp = arrayComTodasEmpresasComMediaCalculadaTemp.map(cadaCodigoBase => ({ codigo_base: cadaCodigoBase, quantas_vezes_apareceu: 0 }))
+            arrayComTodasEmpresasComMediaCalculadaTemp = arrayComTodasEmpresasComMediaCalculadaTemp.map(cadaCodigoBase => ({ codigoBase: cadaCodigoBase, quantasVezesApareceu: 0 }))
 
 
-            todosOsAnosConsolidados.map(cadaAnoCompletoDeCadaEmpresaCompleta => {
+            todosOsAnosConsolidadosPadraoConsultaDB.map(cadaAnoCompletoDeCadaEmpresaCompleta => {
+                // console.log(cadaAnoCompletoDeCadaEmpresaCompleta.codigoBase)
+
                 arrayComTodasEmpresasComMediaCalculadaTemp.map((cadaMediaDeCadaEmpresa, index) => {
+                    // console.log(cadaMediaDeCadaEmpresa)
 
-                    if (cadaAnoCompletoDeCadaEmpresaCompleta.codigo_base === cadaMediaDeCadaEmpresa.codigo_base) {
-                        arrayComTodasEmpresasComMediaCalculadaTemp[index].quantas_vezes_apareceu = arrayComTodasEmpresasComMediaCalculadaTemp[index].quantas_vezes_apareceu + 1
-                        if (arrayComTodasEmpresasComMediaCalculadaTemp[index].quantas_vezes_apareceu === 1) {
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].nome_empresarial = cadaAnoCompletoDeCadaEmpresaCompleta.nome_empresarial
+                    if (cadaAnoCompletoDeCadaEmpresaCompleta.codigo_base === cadaMediaDeCadaEmpresa.codigoBase) {
+                        arrayComTodasEmpresasComMediaCalculadaTemp[index].quantasVezesApareceu = arrayComTodasEmpresasComMediaCalculadaTemp[index].quantasVezesApareceu + 1
+                        if (arrayComTodasEmpresasComMediaCalculadaTemp[index].quantasVezesApareceu === 1) {
+                            arrayComTodasEmpresasComMediaCalculadaTemp[index].nomeEmpresarial = cadaAnoCompletoDeCadaEmpresaCompleta.nome_empresarial
                             arrayComTodasEmpresasComMediaCalculadaTemp[index].ano = "Média dos últimos 3 anos"
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].classificacao_setorial = cadaAnoCompletoDeCadaEmpresaCompleta.classificacao_setorial
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].holding = cadaAnoCompletoDeCadaEmpresaCompleta.holding
+                            arrayComTodasEmpresasComMediaCalculadaTemp[index].classificacaoSetorial = cadaAnoCompletoDeCadaEmpresaCompleta.classificacao_setorial
 
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].receita_liquida = Number(cadaAnoCompletoDeCadaEmpresaCompleta.receita_liquida)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucro_operacional = Number(cadaAnoCompletoDeCadaEmpresaCompleta.lucro_operacional)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucro_liquido = Number(cadaAnoCompletoDeCadaEmpresaCompleta.lucro_liquido)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonio_liquido = Number(cadaAnoCompletoDeCadaEmpresaCompleta.patrimonio_liquido)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].caixa_liquido_operacional = Number(cadaAnoCompletoDeCadaEmpresaCompleta.caixa_liquido_operacional)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].despesas_capital = Number(cadaAnoCompletoDeCadaEmpresaCompleta.despesas_capital)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].proventos_distribuidos = Number(cadaAnoCompletoDeCadaEmpresaCompleta.proventos_distribuidos)
+                            arrayComTodasEmpresasComMediaCalculadaTemp[index].receitaLiquida = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).receitaLiquida
+                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroOperacional
+                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroLiquido = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroLiquido
+                            arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonioLiquido = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).patrimonioLiquido
+                            arrayComTodasEmpresasComMediaCalculadaTemp[index].retornoPeloPatrimonioLiquido = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).retornoPeloPatrimonioLiquido
+
+
+                            // console.log(arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional)
                         } else {
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].receita_liquida = arrayComTodasEmpresasComMediaCalculadaTemp[index].receita_liquida + Number(cadaAnoCompletoDeCadaEmpresaCompleta.receita_liquida)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucro_operacional = arrayComTodasEmpresasComMediaCalculadaTemp[index].lucro_operacional + Number(cadaAnoCompletoDeCadaEmpresaCompleta.lucro_operacional)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucro_liquido = arrayComTodasEmpresasComMediaCalculadaTemp[index].lucro_liquido + Number(cadaAnoCompletoDeCadaEmpresaCompleta.lucro_liquido)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonio_liquido = arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonio_liquido + Number(cadaAnoCompletoDeCadaEmpresaCompleta.patrimonio_liquido)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].caixa_liquido_operacional = arrayComTodasEmpresasComMediaCalculadaTemp[index].caixa_liquido_operacional + Number(cadaAnoCompletoDeCadaEmpresaCompleta.caixa_liquido_operacional)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].despesas_capital = arrayComTodasEmpresasComMediaCalculadaTemp[index].despesas_capital + Number(cadaAnoCompletoDeCadaEmpresaCompleta.despesas_capital)
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].proventos_distribuidos = arrayComTodasEmpresasComMediaCalculadaTemp[index].proventos_distribuidos + Number(cadaAnoCompletoDeCadaEmpresaCompleta.proventos_distribuidos)
+                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].receitaLiquida !== null) {
+                                arrayComTodasEmpresasComMediaCalculadaTemp[index].receitaLiquida += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).receitaLiquida
+                            }
+                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional !== null) {
+                                arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroOperacional
+                            }
+                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroLiquido !== null) {
+                                arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroLiquido += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroLiquido
+                            }
+                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonioLiquido !== null) {
+                                arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonioLiquido += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).patrimonioLiquido
+                            }
+                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].retornoPeloPatrimonioLiquido !== null) {
+                                arrayComTodasEmpresasComMediaCalculadaTemp[index].retornoPeloPatrimonioLiquido += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).retornoPeloPatrimonioLiquido
+                            }
+
+                            // console.log(arrayComTodasEmpresasComMediaCalculadaTemp[index])
                         }
                     }
                 })
@@ -215,17 +296,15 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
 
             arrayComTodasEmpresasComMediaCalculadaTemp = arrayComTodasEmpresasComMediaCalculadaTemp.map(cadaEmpresa => {
                 return {
-                    codigo_base: cadaEmpresa.codigo_base,
-                    nome_empresarial: cadaEmpresa.nome_empresarial,
+                    codigoBase: cadaEmpresa.codigoBase,
+                    nomeEmpresarial: cadaEmpresa.nomeEmpresarial,
                     ano: cadaEmpresa.ano,
-                    classificacao_setorial: cadaEmpresa.classificacao_setorial,
-                    receita_liquida: Math.round(cadaEmpresa.receita_liquida / cadaEmpresa.quantas_vezes_apareceu),
-                    lucro_operacional: Math.round(cadaEmpresa.lucro_operacional / cadaEmpresa.quantas_vezes_apareceu),
-                    lucro_liquido: Math.round(cadaEmpresa.lucro_liquido / cadaEmpresa.quantas_vezes_apareceu),
-                    patrimonio_liquido: Math.round(cadaEmpresa.patrimonio_liquido / cadaEmpresa.quantas_vezes_apareceu),
-                    caixa_liquido_operacional: Math.round(cadaEmpresa.caixa_liquido_operacional / cadaEmpresa.quantas_vezes_apareceu),
-                    despesas_capital: Math.round(cadaEmpresa.despesas_capital / cadaEmpresa.quantas_vezes_apareceu),
-                    proventos_distribuidos: Math.round(cadaEmpresa.proventos_distribuidos / cadaEmpresa.quantas_vezes_apareceu)
+                    classificacaoSetorial: cadaEmpresa.classificacaoSetorial,
+                    receitaLiquida: Math.round(cadaEmpresa.receitaLiquida / cadaEmpresa.quantasVezesApareceu),
+                    lucroOperacional: Math.round(cadaEmpresa.lucroOperacional / cadaEmpresa.quantasVezesApareceu),
+                    lucroLiquido: Math.round(cadaEmpresa.lucroLiquido / cadaEmpresa.quantasVezesApareceu),
+                    patrimonioLiquido: Math.round(cadaEmpresa.patrimonioLiquido / cadaEmpresa.quantasVezesApareceu),
+                    retornoPeloPatrimonioLiquido: Number((cadaEmpresa.retornoPeloPatrimonioLiquido / cadaEmpresa.quantasVezesApareceu).toFixed(2)),
                 }
             })
 
