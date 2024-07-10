@@ -78,7 +78,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
             const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaAnoDeDados, dadosCadastraisDaEmpresaSelecionada)
 
             return ({
-                ano: new Date(`01-01-${cadaAnoDeDados.ano}`).getFullYear(),
+                ano: cadaAnoDeDados.ano,
                 ativoCirculante,
                 ativoNaoCirculante,
                 ativoTotal,
@@ -129,192 +129,130 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
 //busca todas as empresas do setor selecionado e do ano/período selecionado
 app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
     try {
-        let dadosRanking
+        let dadosCompletosDoSetorSelecionado = []
 
         if (req.params.anoParametro !== "MediaDosTresUltimosAnos") {
+            let dadosCompletosDoSetorSelecionadoConsultaDB
+
             if (req.params.setorParametro === "Todos") {
-                dadosRanking = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
+                dadosCompletosDoSetorSelecionadoConsultaDB = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
                     [req.params.anoParametro])
 
-                dadosRanking = dadosRanking.rows.map(cadaAnoDeDados => {
-                    const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaAnoDeDados, cadaAnoDeDados)
-
-                    return ({
-                        ano: new Date(`01-01-${cadaAnoDeDados.ano}`).getFullYear(),
-                        ativoCirculante,
-                        ativoNaoCirculante,
-                        ativoTotal,
-                        passivoCirculante,
-                        passivoNaoCirculante,
-                        passivoTotal,
-                        patrimonioLiquido,
-                        receitaLiquida,
-                        lucroBruto,
-                        lucroOperacional,
-                        lucroAntesTributos,
-                        lucroLiquido,
-                        dividaLiquidaPeloEbitda,
-                        dividaBrutaPeloPatrimonioLiquido,
-                        retornoPeloPatrimonioLiquido,
-                        retornoPelosAtivos,
-                        margemBruta,
-                        margemOperacional,
-                        margemAntesTributos,
-                        margemLiquida,
-                        capexPeloFCO,
-                        capexPelaDA,
-                        payout,
-                        liquidezImediata,
-                        liquidezSeca,
-                        liquidezCorrente,
-                        liquidezGeral
-                    })
-                })
-
             } else if (req.params.setorParametro !== "Todos") {
-                dadosRanking = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
+                dadosCompletosDoSetorSelecionadoConsultaDB = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
                     [req.params.anoParametro, req.params.setorParametro])
-
-                dadosRanking = dadosRanking.rows.map(cadaAnoDeDados => {
-                    const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaAnoDeDados, cadaAnoDeDados)
-
-                    return ({
-                        ano: new Date(`01-01-${cadaAnoDeDados.ano}`).getFullYear(),
-                        ativoCirculante,
-                        ativoNaoCirculante,
-                        ativoTotal,
-                        passivoCirculante,
-                        passivoNaoCirculante,
-                        passivoTotal,
-                        patrimonioLiquido,
-                        receitaLiquida,
-                        lucroBruto,
-                        lucroOperacional,
-                        lucroAntesTributos,
-                        lucroLiquido,
-                        dividaLiquidaPeloEbitda,
-                        dividaBrutaPeloPatrimonioLiquido,
-                        retornoPeloPatrimonioLiquido,
-                        retornoPelosAtivos,
-                        margemBruta,
-                        margemOperacional,
-                        margemAntesTributos,
-                        margemLiquida,
-                        capexPeloFCO,
-                        capexPelaDA,
-                        payout,
-                        liquidezImediata,
-                        liquidezSeca,
-                        liquidezCorrente,
-                        liquidezGeral
-                    })
-                })
             }
 
-        } else if (req.params.anoParametro === "MediaDosTresUltimosAnos") {
-            const anoMaisRecente = 2023
-            let dadosRankingPrimeiroAno, dadosRankingSegundoAno, dadosRankingTerceiroAno
+            dadosCompletosDoSetorSelecionado = dadosCompletosDoSetorSelecionadoConsultaDB.rows.map(cadaAnoDeDados => {
+                const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaAnoDeDados, cadaAnoDeDados)
 
-            if (req.params.setorParametro === "Todos") {
-                dadosRankingPrimeiroAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
-                    [anoMaisRecente])
-
-                dadosRankingSegundoAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
-                    [anoMaisRecente - 1])
-
-                dadosRankingTerceiroAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
-                    [anoMaisRecente - 2])
-
-            } else if (req.params.setorParametro !== "Todos") {
-                dadosRankingPrimeiroAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
-                    [anoMaisRecente, req.params.setorParametro])
-
-                dadosRankingSegundoAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
-                    [anoMaisRecente - 1, req.params.setorParametro])
-
-                dadosRankingTerceiroAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
-                    [anoMaisRecente - 2, req.params.setorParametro])
-            }
-
-            let arrayComTodasEmpresasComMediaCalculadaTemp = []
-            const todosOsAnosConsolidadosPadraoConsultaDB = [...dadosRankingPrimeiroAno.rows, ...dadosRankingSegundoAno.rows, ...dadosRankingTerceiroAno.rows]
-
-            todosOsAnosConsolidadosPadraoConsultaDB.map(cadaEmpresa => {
-                if (arrayComTodasEmpresasComMediaCalculadaTemp.length === 0) {
-                    arrayComTodasEmpresasComMediaCalculadaTemp.push(cadaEmpresa.codigo_base)
-                } else if (!arrayComTodasEmpresasComMediaCalculadaTemp.includes(cadaEmpresa.codigo_base)) {
-                    arrayComTodasEmpresasComMediaCalculadaTemp.push(cadaEmpresa.codigo_base)
+                return {
+                    codigoBase: cadaAnoDeDados.codigo_base,
+                    nomeEmpresarial: cadaAnoDeDados.nome_empresarial,
+                    ano: cadaAnoDeDados.ano,
+                    classificacaoSetorial: cadaAnoDeDados.classificacao_setorial,
+                    receitaLiquida: receitaLiquida !== null ? receitaLiquida : null,
+                    lucroOperacional: lucroOperacional !== null ? lucroOperacional : null,
+                    lucroLiquido: lucroLiquido !== null ? lucroLiquido : null,
+                    patrimonioLiquido: patrimonioLiquido !== null ? patrimonioLiquido : null,
+                    margemOperacional: margemOperacional !== null ? margemOperacional : null,
+                    margemLiquida: margemLiquida !== null ? margemLiquida : null,
+                    retornoPeloPatrimonioLiquido: retornoPeloPatrimonioLiquido !== null ? retornoPeloPatrimonioLiquido : null,
+                    capexPeloFCO: capexPeloFCO !== null ? capexPeloFCO : null,
+                    payout: payout !== null ? payout : null
                 }
             })
 
-            arrayComTodasEmpresasComMediaCalculadaTemp = arrayComTodasEmpresasComMediaCalculadaTemp.map(cadaCodigoBase => ({ codigoBase: cadaCodigoBase, quantasVezesApareceu: 0 }))
+        } else if (req.params.anoParametro === "MediaDosTresUltimosAnos") {
+            const anosUsadosParaCalculoDaMedia = [2023, 2022, 2021]
+            let dadosCompletosDosTresAnosConsolidadosConsultaDB           
 
+            if (req.params.setorParametro === "Todos") {
+                dadosCompletosDosTresAnosConsolidadosConsultaDB = await Promise.all(anosUsadosParaCalculoDaMedia.map(async cadaAno => {
+                    const consultaDeCadaAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1", [cadaAno])
+                    return consultaDeCadaAno.rows
+                }))
 
-            todosOsAnosConsolidadosPadraoConsultaDB.map(cadaAnoCompletoDeCadaEmpresaCompleta => {
-                // console.log(cadaAnoCompletoDeCadaEmpresaCompleta.codigoBase)
+            } else if (req.params.setorParametro !== "Todos") {
+                dadosCompletosDosTresAnosConsolidadosConsultaDB = await Promise.all(anosUsadosParaCalculoDaMedia.map(async cadaAno => {
+                    const consultaDeCadaAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
+                        [cadaAno, req.params.setorParametro])
+                    return consultaDeCadaAno.rows
+                }))
+            }
 
-                arrayComTodasEmpresasComMediaCalculadaTemp.map((cadaMediaDeCadaEmpresa, index) => {
-                    // console.log(cadaMediaDeCadaEmpresa)
+            //monta o array "dadosCompletosDoSetorSelecionado" contendo cada empresa apenas uma vez
+            dadosCompletosDosTresAnosConsolidadosConsultaDB = dadosCompletosDosTresAnosConsolidadosConsultaDB.flat(1)
+            dadosCompletosDosTresAnosConsolidadosConsultaDB.map(cadaEmpresa => {
+                dadosCompletosDoSetorSelecionado.length === 0 ? dadosCompletosDoSetorSelecionado.push(cadaEmpresa.codigo_base) :
+                    !dadosCompletosDoSetorSelecionado.includes(cadaEmpresa.codigo_base) ? dadosCompletosDoSetorSelecionado.push(cadaEmpresa.codigo_base) : null
+            })
+            dadosCompletosDoSetorSelecionado = dadosCompletosDoSetorSelecionado.map(cadaCodigoBase => ({ codigoBase: cadaCodigoBase, quantasVezesApareceu: 0 }))
 
-                    if (cadaAnoCompletoDeCadaEmpresaCompleta.codigo_base === cadaMediaDeCadaEmpresa.codigoBase) {
-                        arrayComTodasEmpresasComMediaCalculadaTemp[index].quantasVezesApareceu = arrayComTodasEmpresasComMediaCalculadaTemp[index].quantasVezesApareceu + 1
-                        if (arrayComTodasEmpresasComMediaCalculadaTemp[index].quantasVezesApareceu === 1) {
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].nomeEmpresarial = cadaAnoCompletoDeCadaEmpresaCompleta.nome_empresarial
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].ano = "Média dos últimos 3 anos"
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].classificacaoSetorial = cadaAnoCompletoDeCadaEmpresaCompleta.classificacao_setorial
+            //complementa cada empresa do array "dadosCompletosDoSetorSelecionado" e soma seus dados financeiros dos três anos
+            dadosCompletosDosTresAnosConsolidadosConsultaDB.map(cadaEmpresaConsultaDB => {
+                const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaEmpresaConsultaDB, cadaEmpresaConsultaDB)
 
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].receitaLiquida = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).receitaLiquida
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroOperacional
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroLiquido = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroLiquido
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonioLiquido = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).patrimonioLiquido
-                            arrayComTodasEmpresasComMediaCalculadaTemp[index].retornoPeloPatrimonioLiquido = calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).retornoPeloPatrimonioLiquido
+                dadosCompletosDoSetorSelecionado.map((cadaEmpresa, index) => {                    
+                    if (cadaEmpresaConsultaDB.codigo_base === cadaEmpresa.codigoBase) {
+                        dadosCompletosDoSetorSelecionado[index].quantasVezesApareceu++
 
+                        if (dadosCompletosDoSetorSelecionado[index].quantasVezesApareceu === 1) {
 
-                            // console.log(arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional)
+                            dadosCompletosDoSetorSelecionado[index].nomeEmpresarial = cadaEmpresaConsultaDB.nome_empresarial
+                            dadosCompletosDoSetorSelecionado[index].ano = "Média dos últimos 3 anos"
+                            dadosCompletosDoSetorSelecionado[index].classificacaoSetorial = cadaEmpresaConsultaDB.classificacao_setorial
+
+                            dadosCompletosDoSetorSelecionado[index].receitaLiquida = receitaLiquida
+                            dadosCompletosDoSetorSelecionado[index].lucroOperacional = lucroOperacional
+                            dadosCompletosDoSetorSelecionado[index].lucroLiquido = lucroLiquido
+                            dadosCompletosDoSetorSelecionado[index].patrimonioLiquido = patrimonioLiquido
+                            dadosCompletosDoSetorSelecionado[index].margemOperacional = margemOperacional
+                            dadosCompletosDoSetorSelecionado[index].margemLiquida = margemLiquida
+                            dadosCompletosDoSetorSelecionado[index].retornoPeloPatrimonioLiquido = retornoPeloPatrimonioLiquido
+                            dadosCompletosDoSetorSelecionado[index].capexPeloFCO = capexPeloFCO
+                            dadosCompletosDoSetorSelecionado[index].payout = payout
+
                         } else {
-                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].receitaLiquida !== null) {
-                                arrayComTodasEmpresasComMediaCalculadaTemp[index].receitaLiquida += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).receitaLiquida
-                            }
-                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional !== null) {
-                                arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroOperacional += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroOperacional
-                            }
-                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroLiquido !== null) {
-                                arrayComTodasEmpresasComMediaCalculadaTemp[index].lucroLiquido += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).lucroLiquido
-                            }
-                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonioLiquido !== null) {
-                                arrayComTodasEmpresasComMediaCalculadaTemp[index].patrimonioLiquido += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).patrimonioLiquido
-                            }
-                            if (arrayComTodasEmpresasComMediaCalculadaTemp[index].retornoPeloPatrimonioLiquido !== null) {
-                                arrayComTodasEmpresasComMediaCalculadaTemp[index].retornoPeloPatrimonioLiquido += calculaIndicadores(cadaAnoCompletoDeCadaEmpresaCompleta, null).retornoPeloPatrimonioLiquido
-                            }
-
-                            // console.log(arrayComTodasEmpresasComMediaCalculadaTemp[index])
+                            dadosCompletosDoSetorSelecionado[index].receitaLiquida !== null ? dadosCompletosDoSetorSelecionado[index].receitaLiquida += receitaLiquida : null
+                            dadosCompletosDoSetorSelecionado[index].lucroOperacional !== null ? dadosCompletosDoSetorSelecionado[index].lucroOperacional += lucroOperacional : null
+                            dadosCompletosDoSetorSelecionado[index].lucroLiquido !== null ? dadosCompletosDoSetorSelecionado[index].lucroLiquido += lucroLiquido : null
+                            dadosCompletosDoSetorSelecionado[index].patrimonioLiquido !== null ? dadosCompletosDoSetorSelecionado[index].patrimonioLiquido += patrimonioLiquido : null
+                            dadosCompletosDoSetorSelecionado[index].margemOperacional !== null ? dadosCompletosDoSetorSelecionado[index].margemOperacional += margemOperacional : null
+                            dadosCompletosDoSetorSelecionado[index].margemLiquida !== null ? dadosCompletosDoSetorSelecionado[index].margemLiquida += margemLiquida : null
+                            dadosCompletosDoSetorSelecionado[index].retornoPeloPatrimonioLiquido !== null ? dadosCompletosDoSetorSelecionado[index].retornoPeloPatrimonioLiquido += retornoPeloPatrimonioLiquido : null
+                            dadosCompletosDoSetorSelecionado[index].capexPeloFCO !== null ? dadosCompletosDoSetorSelecionado[index].capexPeloFCO += capexPeloFCO : null
+                            dadosCompletosDoSetorSelecionado[index].payout !== null ? dadosCompletosDoSetorSelecionado[index].payout += payout : null
                         }
                     }
                 })
             })
 
-            arrayComTodasEmpresasComMediaCalculadaTemp = arrayComTodasEmpresasComMediaCalculadaTemp.map(cadaEmpresa => {
+
+            //calcula a média dos dados financeiros dos três anos de cada empresa e prepara o array "dadosCompletosDoSetorSelecionado" para ser enviado ao frontend
+            dadosCompletosDoSetorSelecionado = dadosCompletosDoSetorSelecionado.map(cadaEmpresa => {                
+                const { quantasVezesApareceu, codigoBase, nomeEmpresarial, ano, classificacaoSetorial, receitaLiquida, lucroOperacional, lucroLiquido, patrimonioLiquido, margemOperacional, margemLiquida, retornoPeloPatrimonioLiquido, capexPeloFCO, payout } = cadaEmpresa
+
                 return {
-                    codigoBase: cadaEmpresa.codigoBase,
-                    nomeEmpresarial: cadaEmpresa.nomeEmpresarial,
-                    ano: cadaEmpresa.ano,
-                    classificacaoSetorial: cadaEmpresa.classificacaoSetorial,
-                    receitaLiquida: Math.round(cadaEmpresa.receitaLiquida / cadaEmpresa.quantasVezesApareceu),
-                    lucroOperacional: Math.round(cadaEmpresa.lucroOperacional / cadaEmpresa.quantasVezesApareceu),
-                    lucroLiquido: Math.round(cadaEmpresa.lucroLiquido / cadaEmpresa.quantasVezesApareceu),
-                    patrimonioLiquido: Math.round(cadaEmpresa.patrimonioLiquido / cadaEmpresa.quantasVezesApareceu),
-                    retornoPeloPatrimonioLiquido: Number((cadaEmpresa.retornoPeloPatrimonioLiquido / cadaEmpresa.quantasVezesApareceu).toFixed(2)),
+                    codigoBase: codigoBase,
+                    nomeEmpresarial: nomeEmpresarial,
+                    ano: ano,
+                    classificacaoSetorial: classificacaoSetorial,
+                    receitaLiquida: receitaLiquida !== null ? Math.round(receitaLiquida / quantasVezesApareceu) : null,
+                    lucroOperacional: lucroOperacional !== null ? Math.round(lucroOperacional / quantasVezesApareceu) : null,
+                    lucroLiquido: lucroLiquido !== null ? Math.round(lucroLiquido / quantasVezesApareceu) : null,
+                    patrimonioLiquido: patrimonioLiquido !== null ? Math.round(patrimonioLiquido / quantasVezesApareceu) : null,
+                    margemOperacional: margemOperacional !== null ? Number((margemOperacional / quantasVezesApareceu).toFixed(4)) : null,
+                    margemLiquida: margemLiquida !== null ? Number((margemLiquida / quantasVezesApareceu).toFixed(4)) : null,
+                    retornoPeloPatrimonioLiquido: retornoPeloPatrimonioLiquido !== null ? Number((retornoPeloPatrimonioLiquido / quantasVezesApareceu).toFixed(4)) : null,
+                    capexPeloFCO: capexPeloFCO !== null ? Number((capexPeloFCO / quantasVezesApareceu).toFixed(4)) : null,
+                    payout: payout !== null ? Number((payout / quantasVezesApareceu).toFixed(4)) : null,
                 }
             })
-
-            dadosRanking = arrayComTodasEmpresasComMediaCalculadaTemp
-
-            console.log(dadosRanking)
         }
 
         res.json({
-            dadosRanking
+            dadosCompletosDoSetorSelecionado
         })
 
     } catch (error) {
