@@ -28,7 +28,7 @@ app.get("/api/acoes/", async (_, res) => {
                 cnpj: cadaEmpresa.cnpj,
                 nomeEmpresarial: cadaEmpresa.nome_empresarial,
                 codigoBase: cadaEmpresa.codigo_base,
-                cogigosNegociacao: cadaEmpresa.codigos_negociacao,
+                codigosNegociacao: cadaEmpresa.codigos_negociacao,
                 segmentoListagem: cadaEmpresa.segmento_listagem,
                 escriturador: cadaEmpresa.escriturador,
                 classificacaoSetorial: cadaEmpresa.classificacao_setorial,
@@ -131,15 +131,15 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
     try {
         let dadosCompletosDoSetorSelecionado = []
 
-        if (req.params.anoParametro !== "MediaDosTresUltimosAnos") {
+        if (req.params.anoParametro !== "MediaDosTresUltimosAnos" && req.params.anoParametro !== "MediaDosCincoUltimosAnos") {
             let dadosCompletosDoSetorSelecionadoConsultaDB
 
             if (req.params.setorParametro === "Todos") {
-                dadosCompletosDoSetorSelecionadoConsultaDB = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
+                dadosCompletosDoSetorSelecionadoConsultaDB = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido, caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1",
                     [req.params.anoParametro])
 
             } else if (req.params.setorParametro !== "Todos") {
-                dadosCompletosDoSetorSelecionadoConsultaDB = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
+                dadosCompletosDoSetorSelecionadoConsultaDB = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido, caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
                     [req.params.anoParametro, req.params.setorParametro])
             }
 
@@ -155,6 +155,7 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                     lucroOperacional: lucroOperacional !== null ? lucroOperacional : null,
                     lucroLiquido: lucroLiquido !== null ? lucroLiquido : null,
                     patrimonioLiquido: patrimonioLiquido !== null ? patrimonioLiquido : null,
+                    dividaBrutaPeloPatrimonioLiquido: dividaBrutaPeloPatrimonioLiquido !== null ? dividaBrutaPeloPatrimonioLiquido : null,
                     margemOperacional: margemOperacional !== null ? margemOperacional : null,
                     margemLiquida: margemLiquida !== null ? margemLiquida : null,
                     retornoPeloPatrimonioLiquido: retornoPeloPatrimonioLiquido !== null ? retornoPeloPatrimonioLiquido : null,
@@ -163,19 +164,19 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                 }
             })
 
-        } else if (req.params.anoParametro === "MediaDosTresUltimosAnos") {
-            const anosUsadosParaCalculoDaMedia = [2023, 2022, 2021]
-            let dadosCompletosDosTresAnosConsolidadosConsultaDB           
+        } else if (req.params.anoParametro === "MediaDosTresUltimosAnos" || req.params.anoParametro === "MediaDosCincoUltimosAnos") {
+            const anosUsadosParaCalculoDaMedia = req.params.anoParametro === "MediaDosTresUltimosAnos" ? [2023, 2022, 2021] : [2023, 2022, 2021, 2020, 2019]
+            let dadosCompletosDosTresAnosConsolidadosConsultaDB
 
             if (req.params.setorParametro === "Todos") {
                 dadosCompletosDosTresAnosConsolidadosConsultaDB = await Promise.all(anosUsadosParaCalculoDaMedia.map(async cadaAno => {
-                    const consultaDeCadaAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1", [cadaAno])
+                    const consultaDeCadaAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, instituicao_financeira, holding, ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido, caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1", [cadaAno])
                     return consultaDeCadaAno.rows
                 }))
 
             } else if (req.params.setorParametro !== "Todos") {
                 dadosCompletosDosTresAnosConsolidadosConsultaDB = await Promise.all(anosUsadosParaCalculoDaMedia.map(async cadaAno => {
-                    const consultaDeCadaAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, receita_liquida, lucro_operacional, lucro_liquido, patrimonio_liquido, caixa_liquido_operacional, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
+                    const consultaDeCadaAno = await database.query("SELECT codigo_base, nome_empresarial, ano, classificacao_setorial, instituicao_financeira, holding, ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo, passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido, receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido, caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos FROM dados_financeiros_empresa JOIN empresas ON dados_financeiros_empresa.id_empresa = empresas.id WHERE ano = $1 AND empresas.classificacao_setorial = $2",
                         [cadaAno, req.params.setorParametro])
                     return consultaDeCadaAno.rows
                 }))
@@ -193,7 +194,7 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
             dadosCompletosDosTresAnosConsolidadosConsultaDB.map(cadaEmpresaConsultaDB => {
                 const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaEmpresaConsultaDB, cadaEmpresaConsultaDB)
 
-                dadosCompletosDoSetorSelecionado.map((cadaEmpresa, index) => {                    
+                dadosCompletosDoSetorSelecionado.map((cadaEmpresa, index) => {
                     if (cadaEmpresaConsultaDB.codigo_base === cadaEmpresa.codigoBase) {
                         dadosCompletosDoSetorSelecionado[index].quantasVezesApareceu++
 
@@ -207,6 +208,8 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                             dadosCompletosDoSetorSelecionado[index].lucroOperacional = lucroOperacional
                             dadosCompletosDoSetorSelecionado[index].lucroLiquido = lucroLiquido
                             dadosCompletosDoSetorSelecionado[index].patrimonioLiquido = patrimonioLiquido
+                            dadosCompletosDoSetorSelecionado[index].dividaLiquidaPeloEbitda = dividaLiquidaPeloEbitda
+                            dadosCompletosDoSetorSelecionado[index].dividaBrutaPeloPatrimonioLiquido = dividaBrutaPeloPatrimonioLiquido
                             dadosCompletosDoSetorSelecionado[index].margemOperacional = margemOperacional
                             dadosCompletosDoSetorSelecionado[index].margemLiquida = margemLiquida
                             dadosCompletosDoSetorSelecionado[index].retornoPeloPatrimonioLiquido = retornoPeloPatrimonioLiquido
@@ -218,6 +221,8 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                             dadosCompletosDoSetorSelecionado[index].lucroOperacional !== null ? dadosCompletosDoSetorSelecionado[index].lucroOperacional += lucroOperacional : null
                             dadosCompletosDoSetorSelecionado[index].lucroLiquido !== null ? dadosCompletosDoSetorSelecionado[index].lucroLiquido += lucroLiquido : null
                             dadosCompletosDoSetorSelecionado[index].patrimonioLiquido !== null ? dadosCompletosDoSetorSelecionado[index].patrimonioLiquido += patrimonioLiquido : null
+                            dadosCompletosDoSetorSelecionado[index].dividaLiquidaPeloEbitda !== null ? dadosCompletosDoSetorSelecionado[index].dividaLiquidaPeloEbitda += dividaLiquidaPeloEbitda : null
+                            dadosCompletosDoSetorSelecionado[index].dividaBrutaPeloPatrimonioLiquido !== null ? dadosCompletosDoSetorSelecionado[index].dividaBrutaPeloPatrimonioLiquido += dividaBrutaPeloPatrimonioLiquido : null
                             dadosCompletosDoSetorSelecionado[index].margemOperacional !== null ? dadosCompletosDoSetorSelecionado[index].margemOperacional += margemOperacional : null
                             dadosCompletosDoSetorSelecionado[index].margemLiquida !== null ? dadosCompletosDoSetorSelecionado[index].margemLiquida += margemLiquida : null
                             dadosCompletosDoSetorSelecionado[index].retornoPeloPatrimonioLiquido !== null ? dadosCompletosDoSetorSelecionado[index].retornoPeloPatrimonioLiquido += retornoPeloPatrimonioLiquido : null
@@ -230,8 +235,8 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
 
 
             //calcula a média dos dados financeiros dos três anos de cada empresa e prepara o array "dadosCompletosDoSetorSelecionado" para ser enviado ao frontend
-            dadosCompletosDoSetorSelecionado = dadosCompletosDoSetorSelecionado.map(cadaEmpresa => {                
-                const { quantasVezesApareceu, codigoBase, nomeEmpresarial, ano, classificacaoSetorial, receitaLiquida, lucroOperacional, lucroLiquido, patrimonioLiquido, margemOperacional, margemLiquida, retornoPeloPatrimonioLiquido, capexPeloFCO, payout } = cadaEmpresa
+            dadosCompletosDoSetorSelecionado = dadosCompletosDoSetorSelecionado.map(cadaEmpresa => {
+                const { quantasVezesApareceu, codigoBase, nomeEmpresarial, ano, classificacaoSetorial, ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = cadaEmpresa
 
                 return {
                     codigoBase: codigoBase,
@@ -242,6 +247,8 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                     lucroOperacional: lucroOperacional !== null ? Math.round(lucroOperacional / quantasVezesApareceu) : null,
                     lucroLiquido: lucroLiquido !== null ? Math.round(lucroLiquido / quantasVezesApareceu) : null,
                     patrimonioLiquido: patrimonioLiquido !== null ? Math.round(patrimonioLiquido / quantasVezesApareceu) : null,
+                    dividaLiquidaPeloEbitda: dividaLiquidaPeloEbitda !== null ? Number((dividaLiquidaPeloEbitda / quantasVezesApareceu).toFixed(4)) : null,
+                    dividaBrutaPeloPatrimonioLiquido: dividaBrutaPeloPatrimonioLiquido !== null ? Number((dividaBrutaPeloPatrimonioLiquido / quantasVezesApareceu).toFixed(4)) : null,
                     margemOperacional: margemOperacional !== null ? Number((margemOperacional / quantasVezesApareceu).toFixed(4)) : null,
                     margemLiquida: margemLiquida !== null ? Number((margemLiquida / quantasVezesApareceu).toFixed(4)) : null,
                     retornoPeloPatrimonioLiquido: retornoPeloPatrimonioLiquido !== null ? Number((retornoPeloPatrimonioLiquido / quantasVezesApareceu).toFixed(4)) : null,
