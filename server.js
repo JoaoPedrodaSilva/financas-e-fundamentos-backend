@@ -130,6 +130,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
 app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
     try {
         let dadosCompletosDoSetorSelecionado = []
+        let dadosCompletosDoSetorSelecionadoSeparadosPorAno = []
 
         if (req.params.anoParametro !== "MediaDosTresUltimosAnos" && req.params.anoParametro !== "MediaDosCincoUltimosAnos") {
             let dadosCompletosDoSetorSelecionadoConsultaDB
@@ -191,7 +192,7 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
             dadosCompletosDoSetorSelecionado = dadosCompletosDoSetorSelecionado.map(cadaCodigoBase => ({ codigoBase: cadaCodigoBase, quantasVezesApareceu: 0 }))
 
             //complementa cada empresa do array "dadosCompletosDoSetorSelecionado" e soma seus dados financeiros dos três anos
-            dadosCompletosDosTresAnosConsolidadosConsultaDB.map(cadaEmpresaConsultaDB => {
+            dadosCompletosDosTresAnosConsolidadosConsultaDB.map((cadaEmpresaConsultaDB, i) => {
                 const { ativoCirculante, ativoNaoCirculante, ativoTotal, passivoCirculante, passivoNaoCirculante, passivoTotal, patrimonioLiquido, receitaLiquida, lucroBruto, lucroOperacional, lucroAntesTributos, lucroLiquido, dividaLiquidaPeloEbitda, dividaBrutaPeloPatrimonioLiquido, retornoPeloPatrimonioLiquido, retornoPelosAtivos, margemBruta, margemOperacional, margemAntesTributos, margemLiquida, capexPeloFCO, capexPelaDA, payout, liquidezImediata, liquidezSeca, liquidezCorrente, liquidezGeral } = calculaIndicadores(cadaEmpresaConsultaDB, cadaEmpresaConsultaDB)
 
                 dadosCompletosDoSetorSelecionado.map((cadaEmpresa, index) => {
@@ -229,7 +230,25 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                             dadosCompletosDoSetorSelecionado[index].capexPeloFCO !== null ? dadosCompletosDoSetorSelecionado[index].capexPeloFCO += capexPeloFCO : null
                             dadosCompletosDoSetorSelecionado[index].payout !== null ? dadosCompletosDoSetorSelecionado[index].payout += payout : null
                         }
-                    }
+                    
+                        dadosCompletosDoSetorSelecionadoSeparadosPorAno[i] = {
+                            codigoBase: cadaEmpresaConsultaDB.codigo_base,
+                            nomeEmpresarial: cadaEmpresaConsultaDB.nome_empresarial,
+                            ano: cadaEmpresaConsultaDB.ano,
+                            classificacaoSetorial: cadaEmpresaConsultaDB.classificacao_setorial,
+                            receitaLiquida: receitaLiquida,
+                            lucroOperacional: lucroOperacional,
+                            lucroLiquido: lucroLiquido,
+                            patrimonioLiquido: patrimonioLiquido,
+                            dividaLiquidaPeloEbitda: dividaLiquidaPeloEbitda,
+                            dividaBrutaPeloPatrimonioLiquido: dividaBrutaPeloPatrimonioLiquido,
+                            margemOperacional: margemOperacional,
+                            margemLiquida: margemLiquida,
+                            retornoPeloPatrimonioLiquido: retornoPeloPatrimonioLiquido,
+                            capexPeloFCO: capexPeloFCO,
+                            payout: payout
+                        }
+                    }                    
                 })
             })
 
@@ -259,7 +278,8 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
         }
 
         res.json({
-            dadosCompletosDoSetorSelecionado
+            dadosCompletosDoSetorSelecionado,
+            dadosCompletosDoSetorSelecionadoSeparadosPorAno
         })
 
     } catch (error) {
