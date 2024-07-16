@@ -156,6 +156,7 @@ app.get("/api/rankings/:anoParametro/:setorParametro", async (req, res) => {
                     lucroOperacional: lucroOperacional !== null ? lucroOperacional : null,
                     lucroLiquido: lucroLiquido !== null ? lucroLiquido : null,
                     patrimonioLiquido: patrimonioLiquido !== null ? patrimonioLiquido : null,
+                    dividaLiquidaPeloEbitda: dividaLiquidaPeloEbitda !== null ? dividaLiquidaPeloEbitda : null,
                     dividaBrutaPeloPatrimonioLiquido: dividaBrutaPeloPatrimonioLiquido !== null ? dividaBrutaPeloPatrimonioLiquido : null,
                     margemOperacional: margemOperacional !== null ? margemOperacional : null,
                     margemLiquida: margemLiquida !== null ? margemLiquida : null,
