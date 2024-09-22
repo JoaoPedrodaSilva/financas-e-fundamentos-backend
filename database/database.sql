@@ -69,11 +69,11 @@ ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circula
 passivo_total, passivo_circulante, emprestimos_curto_prazo, passivo_nao_circulante, emprestimos_longo_prazo, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_operacional, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
-VALUES (3, 2016,
-0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0,
-0, 0, 0, 0)
+VALUES (3, 2023,
+null, null, null, null, null, null,
+null, null, null, null, null, null,
+null, null, null, null, null,
+null, null, null, null)
 
 SELECT id, id_empresa, ano,
 ativo_total, ativo_circulante, caixa_e_equivalentes, estoques, ativo_nao_circulante, ativo_realizavel_longo_prazo,
@@ -90,7 +90,10 @@ id_empresa, ano,
 ativo_total, passivo_total, patrimonio_liquido,
 receita_liquida, lucro_bruto, lucro_antes_tributos, lucro_liquido,
 caixa_liquido_operacional, depreciacao_e_amortizacao, despesas_capital, proventos_distribuidos)
-VALUES ()
+VALUES (3, 2023,
+null, null, null,
+null, null, null, null,
+null, null, null, null)
 
 SELECT id, id_empresa, ano,
 ativo_total, passivo_total, patrimonio_liquido,
@@ -107,7 +110,11 @@ ativo_total, ativo_circulante, ativo_nao_circulante,
 passivo_total, passivo_circulante, passivo_nao_circulante, patrimonio_liquido,
 lucro_operacional, lucro_antes_tributos, lucro_liquido,
 proventos_distribuidos)
-VALUES ()
+VALUES (3, 2023,
+null, null, null,
+null, null, null, null,
+null, null, null,
+null)
 
 SELECT id, id_empresa, ano,
 ativo_total, ativo_circulante, ativo_nao_circulante,
