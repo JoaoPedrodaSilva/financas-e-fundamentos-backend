@@ -65,7 +65,7 @@ app.get("/api/acoes/:codigoBaseParametro", async (req, res) => {
             cnpj: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].cnpj,
             nomeEmpresarial: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].nome_empresarial,
             codigoBase: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].codigo_base,
-            cogigosNegociacao: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].codigos_negociacao,
+            codigosNegociacao: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].codigos_negociacao,
             segmentoListagem: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].segmento_listagem,
             escriturador: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].escriturador,
             classificacaoSetorial: dadosCadastraisDaEmpresaSelecionadaConsultaBD.rows[0].classificacao_setorial,
